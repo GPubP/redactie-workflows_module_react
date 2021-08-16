@@ -25,7 +25,8 @@ export const MODULE_PATHS = {
 
 	// SITE
 	site: {
-		workflowRoot: `${SITE_ROOT}/${WORKFLOWS_BASE_PATH}/overzicht`,
+		workflowRoot: `${SITE_ROOT}/${WORKFLOWS_BASE_PATH}`,
+		workflowOverview: `${SITE_ROOT}/${WORKFLOWS_BASE_PATH}/overzicht`,
 		workflowEdit: `${SITE_ROOT}/${WORKFLOWS_BASE_PATH}/:workflowUuid/bewerken`,
 		workflowCreate: `${SITE_ROOT}/${WORKFLOWS_BASE_PATH}/aanmaken`,
 	},
