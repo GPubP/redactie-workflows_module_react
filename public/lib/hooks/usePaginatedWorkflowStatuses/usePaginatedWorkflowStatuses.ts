@@ -61,7 +61,7 @@ const usePaginatedWorkflowStatuses: UsePaginatedWorkflowStatuses = (
 
 		if (
 			searchParams.sort !== prevSearchParams?.sort ||
-			searchParams.label !== prevSearchParams?.label ||
+			searchParams.search !== prevSearchParams?.search ||
 			clearCache
 		) {
 			paginator.clearCache();
@@ -79,7 +79,7 @@ const usePaginatedWorkflowStatuses: UsePaginatedWorkflowStatuses = (
 		prevSearchParams,
 		searchParams,
 		searchParams.page,
-		searchParams.label,
+		searchParams.search,
 		searchParams.sort,
 	]);
 

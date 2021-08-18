@@ -3,7 +3,12 @@ import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
 
 import { rolesRightsConnector, sitesConnector } from './lib/connectors';
-import { WorkflowsOverview, WorkflowStatusEdit, WorkflowStatusesOverview } from './lib/views';
+import {
+	WorkflowsOverview,
+	WorkflowStatusCreate,
+	WorkflowStatusEdit,
+	WorkflowStatusesOverview,
+} from './lib/views';
 import { MODULE_PATHS, SITE_PARAM } from './lib/workflows.const';
 import { WorkflowModuleRouteProps } from './lib/workflows.types';
 
@@ -80,7 +85,7 @@ if (rolesRightsConnector.api) {
 			parentPath: MODULE_PATHS.workflowRoot,
 			canShown: [
 				rolesRightsConnector.api.canShowns.securityRightsTenantCanShown([
-					rolesRightsConnector.securityRights.readWorkflowStatus,
+					// rolesRightsConnector.securityRights.readWorkflowStatus,
 				]),
 			],
 		},
@@ -105,6 +110,18 @@ if (rolesRightsConnector.api) {
 					guards: [
 						rolesRightsConnector.api.guards.securityRightsTenantGuard([
 							rolesRightsConnector.securityRights.updateWorkflowStatus,
+						]),
+					],
+				},
+			},
+			{
+				path: MODULE_PATHS.workflowStatusCreate,
+				breadcrumb: false,
+				component: WorkflowStatusCreate,
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsTenantGuard([
+							rolesRightsConnector.securityRights.createWorkflowStatus,
 						]),
 					],
 				},

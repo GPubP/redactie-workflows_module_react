@@ -2,7 +2,17 @@ import { AlertMessages } from '../../workflows.types';
 
 export const getAlertMessages = (
 	name?: string
-): AlertMessages<'fetch' | 'fetchOne' | 'delete' | 'update'> => ({
+): AlertMessages<'create' | 'fetch' | 'fetchOne' | 'delete' | 'update'> => ({
+	create: {
+		success: {
+			title: 'Aangemaakt',
+			message: `U hebt de status ${name} succesvol aangemaakt`,
+		},
+		error: {
+			title: 'Aanmaken mislukt',
+			message: `Aanmaken van de status ${name} is mislukt`,
+		},
+	},
 	fetch: {
 		error: {
 			title: 'Ophalen',

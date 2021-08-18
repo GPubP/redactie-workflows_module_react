@@ -1,6 +1,7 @@
 export interface WorkflowStatusesOverviewTableRow {
 	workflowStatusUuid: string;
-	label: string;
+	name: string;
 	description: string;
+	removable: boolean;
 	navigate: (statusUuid: string) => void;
 }

@@ -13,6 +13,7 @@ import {
 	useOnNextRender,
 } from '@redactie/utils';
 import { FormikProps } from 'formik';
+import { omit } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -20,7 +21,6 @@ import WorkflowStatusForm from '../../components/forms/WorkflowStatusForm/Workfl
 import { WorkflowStatusFormState } from '../../components/forms/WorkflowStatusForm/workflowStatusForm.types';
 import { rolesRightsConnector } from '../../connectors';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
-import {} from '../../helpers';
 import { useRoutesBreadcrumbs } from '../../hooks';
 import useWorkflowStatus from '../../hooks/useWorkflowStatus/useWorkflowStatus';
 import { WorkflowStatus } from '../../services/workflowStatuses';
@@ -74,26 +74,20 @@ const WorkflowStatusEdit: FC<WorkflowModuleRouteProps> = () => {
 	);
 
 	useEffect(() => {
-		if (!workflowStatus) {
-			return;
-		}
+		if (!workflowStatusUI?.isFetching && workflowStatus) {
+			const state = {
+				uuid: workflowStatus.uuid as string,
+				name: workflowStatus.data.name,
+				systemName: workflowStatus.data.systemName,
+				description: workflowStatus.data.description,
+			};
+			setInitialFormState(state);
 
-		const state = {
-			uuid: workflowStatus.uuid,
-			name: workflowStatus.data.name,
-			systemName: workflowStatus.data.systemName,
-			description: workflowStatus.data.description,
-		};
-		setInitialFormState(state);
-	}, [workflowStatus]);
-
-	useEffect(() => {
-		if (!workflowStatusUI?.isFetching) {
 			return setInitialLoading(LoadingState.Loaded);
 		}
 
 		setInitialLoading(LoadingState.Loading);
-	}, [workflowStatusUI]);
+	}, [workflowStatus, workflowStatusUI]);
 
 	/**
 	 * Methods
@@ -105,16 +99,16 @@ const WorkflowStatusEdit: FC<WorkflowModuleRouteProps> = () => {
 			...(workflowStatus as WorkflowStatus),
 			data: {
 				...workflowStatus?.data,
-				...data,
+				...omit(['uuid'], data),
 			},
 		});
-
-		setIsSubmitting(false);
 
 		if (isSuccesss) {
 			forceNavigateToOverview();
 			resetDetectValueChanges();
 		}
+
+		setIsSubmitting(false);
 	};
 
 	const onDelete = async (): Promise<void> => {
@@ -152,7 +146,7 @@ const WorkflowStatusEdit: FC<WorkflowModuleRouteProps> = () => {
 			<WorkflowStatusForm
 				initialState={initialFormState}
 				isUpdate={true}
-				isLoading={workflowStatusUI?.isFetching}
+				isLoading={workflowStatusUI?.isFetching || workflowStatusUI?.isUpdating}
 				isDeleting={workflowStatusUI?.isDeleting}
 				hasChanges={hasChanges}
 				canDelete={canDelete}

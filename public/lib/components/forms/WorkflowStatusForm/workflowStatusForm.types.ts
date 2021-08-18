@@ -1,9 +1,9 @@
 import { FormikProps } from 'formik';
 
 export interface WorkflowStatusFormState {
-	uuid: string;
+	uuid?: string;
 	name: string;
-	systemName: string;
+	systemName?: string;
 	description: string;
 }
 

@@ -7,3 +7,4 @@ export interface GetWorkflowStatusesPaginatedPayloadOptions {
 
 export type DeleteWorkflowStatusPayload = WorkflowStatusDetailModel;
 export type UpdateWorkflowStatusPayload = WorkflowStatusDetailModel;
+export type CreateWorkflowStatusPayload = WorkflowStatusDetailModel;

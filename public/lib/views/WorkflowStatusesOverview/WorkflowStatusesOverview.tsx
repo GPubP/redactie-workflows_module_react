@@ -7,40 +7,41 @@ import {
 	PaginatedTable,
 } from '@acpaas-ui/react-editorial-components';
 import {
+	AlertContainer,
 	DataLoader,
 	FilterItem,
 	LoadingState,
 	OrderBy,
-	parseObjToOrderBy,
-	parseOrderByToObj,
+	parseOrderByToString,
+	parseStringToOrderBy,
 	SearchParams,
 	useAPIQueryParams,
 	useNavigate,
 } from '@redactie/utils';
-import { FormikHelpers } from 'formik';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 
-import { FilterForm, FilterFormState, ResetForm } from '../../components';
+import { FilterForm, FilterFormState } from '../../components';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
 import { usePaginatedWorkflowStatuses } from '../../hooks';
 import useRoutesBreadcrumbs from '../../hooks/useRoutesBreadcrumbs/useRoutesBreadcrumbs';
 import { DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS } from '../../services/workflowStatuses';
+import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from '../../store/workflowStatuses.const';
 import { MODULE_PATHS } from '../../workflows.const';
 import { WorkflowModuleRouteProps, WorkflowsMatchProps } from '../../workflows.types';
 
 import {
+	DEFAULT_FILTER_FORM,
+	DEFAULT_OVERVIEW_QUERY_PARAMS,
 	OVERVIEW_COLUMNS,
-	OVERVIEW_QUERY_PARAMS_CONFIG,
-	WORKFLOW_STATUSES_OVERVIEW_INITIAL_FILTER_STATE,
 } from './workflowStatusesOverview.const';
 import { WorkflowStatusesOverviewTableRow } from './workflowStatusesOverview.types';
 
 const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () => {
-	const [filterItems, setFilterItems] = useState<FilterItem[]>([]);
+	const [filterFormState, setFilterFormState] = useState<FilterFormState>(DEFAULT_FILTER_FORM);
 	const [t] = useCoreTranslation();
 	const breadcrumbs = useRoutesBreadcrumbs();
 	const { navigate } = useNavigate();
-	const [query, setQuery] = useAPIQueryParams(OVERVIEW_QUERY_PARAMS_CONFIG, false);
+	const [query, setQuery] = useAPIQueryParams(DEFAULT_OVERVIEW_QUERY_PARAMS);
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [
 		mySecurityRightsLoadingState,
@@ -54,56 +55,65 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 		}
 	}, [mySecurityRightsLoadingState]);
 
+	// Set initial values with query params
+	useEffect(() => {
+		setFilterFormState({
+			name: query.search ?? '',
+		});
+	}, []); // eslint-disable-line react-hooks/exhaustive-deps
+
 	/**
 	 * Functions
 	 */
-	const onSubmit = (
-		{ name }: FilterFormState,
-		formikHelpers: FormikHelpers<FilterFormState>
-	): void => {
-		setFilterItems([{ value: name, valuePrefix: 'Naam' }]);
-
-		// Add array to searchParams
-		setQuery({ search: [name] });
-		formikHelpers.resetForm();
+	const createFilters = (values: FilterFormState): FilterItem[] => {
+		return [
+			{
+				key: 'search',
+				valuePrefix: 'Zoekterm',
+				value: values.name,
+			},
+		].filter(f => !!f.value);
 	};
 
-	const deleteAllFilters = (resetForm: ResetForm): void => {
-		// Clear filter items
-		setFilterItems([]);
-		// Reset search params
-		setQuery({ ...DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS, search: undefined });
-		resetForm();
-	};
-
-	const deleteFilter = (item: any): void => {
-		// Delete item from filterItems
-		const newFilters = filterItems?.filter(el => el.value !== item.value);
-		// Get value array from filterItems
-		const search = newFilters.map(item => item['value']);
-
-		setFilterItems(newFilters);
-		// Add search to searchParams
-		setQuery({ search });
-	};
-
-	const handlePageChange = (pageNumber: number): void => {
+	const clearAllFilters = (): void => {
 		setQuery({
-			...query,
-			page: pageNumber,
+			page: 1,
+			search: undefined,
+		});
+		setFilterFormState(DEFAULT_FILTER_FORM);
+	};
+
+	const clearFilter = (item: FilterItem): void => {
+		setQuery({ [item.key as string]: '' });
+		setFilterFormState({
+			...filterFormState,
+			[item.key as string]: '',
 		});
 	};
 
-	const handleOrderBy = (orderBy: OrderBy): void => {
+	const onPageChange = (page: number): void => {
+		setQuery({ page });
+	};
+
+	const onOrderBy = (orderBy: OrderBy): void => {
 		setQuery({
-			...parseOrderByToObj({ ...orderBy, key: `meta.${orderBy.key}` }),
+			sort: parseOrderByToString({
+				...orderBy,
+				key: `data.${orderBy.key}`,
+			}),
 		});
 	};
 
-	const activeSorting: OrderBy = parseObjToOrderBy({
-		sort: query.sort ? query.sort.split('.')[1] : '',
-		direction: query.direction ?? 1,
-	});
+	const onApplyFilters = (values: FilterFormState): void => {
+		setFilterFormState(values);
+		setQuery({
+			page: 1,
+			search: values.name || undefined,
+		});
+	};
+
+	const activeSorting = parseStringToOrderBy(query.sort ?? '');
+	const activeFilters = createFilters(filterFormState);
 
 	/**
 	 * Render
@@ -112,8 +122,9 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 		const statusRows: WorkflowStatusesOverviewTableRow[] = (pagination?.data || []).map(
 			status => ({
 				workflowStatusUuid: status.uuid as string,
-				label: status.data.name,
+				name: status.data.name,
 				description: status.data.description,
+				removable: !!status.meta?.removable,
 				navigate: (workflowStatusUuid: string) =>
 					navigate(MODULE_PATHS.workflowStatusEdit, { workflowStatusUuid }),
 			})
@@ -122,11 +133,11 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 		return (
 			<>
 				<FilterForm
-					initialState={WORKFLOW_STATUSES_OVERVIEW_INITIAL_FILTER_STATE}
-					onCancel={deleteAllFilters}
-					onSubmit={onSubmit}
-					deleteActiveFilter={deleteFilter}
-					activeFilters={filterItems}
+					initialState={DEFAULT_FILTER_FORM}
+					onCancel={clearAllFilters}
+					onSubmit={onApplyFilters}
+					deleteActiveFilter={clearFilter}
+					activeFilters={activeFilters}
 				/>
 				<PaginatedTable
 					fixed
@@ -136,8 +147,8 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 					rows={statusRows}
 					currentPage={query.page}
 					itemsPerPage={DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS.pagesize}
-					onPageChange={handlePageChange}
-					orderBy={handleOrderBy}
+					onPageChange={onPageChange}
+					orderBy={onOrderBy}
 					activeSorting={activeSorting}
 					totalValues={pagination?.total || 0}
 					loading={loading}
@@ -169,6 +180,10 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 				</ContextHeaderActionsSection>
 			</ContextHeader>
 			<Container>
+				<AlertContainer
+					toastClassName="u-margin-bottom"
+					containerId={WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.fetch}
+				/>
 				<DataLoader loadingState={initialLoading} render={renderOverview} />
 			</Container>
 		</>

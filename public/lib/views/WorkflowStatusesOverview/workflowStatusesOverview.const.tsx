@@ -6,20 +6,18 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { CORE_TRANSLATIONS, rolesRightsConnector } from '../../connectors';
-import { DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS } from '../../services/workflowStatuses';
 
 import { WorkflowStatusesOverviewTableRow } from './workflowStatusesOverview.types';
 
-export const WORKFLOW_STATUSES_OVERVIEW_INITIAL_FILTER_STATE = {
+export const DEFAULT_FILTER_FORM = {
 	name: '',
 };
 
-export const OVERVIEW_QUERY_PARAMS_CONFIG = {
-	page: { defaultValue: DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS.page, type: 'number' },
-	pagesize: { defaultValue: DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS.limit, type: 'number' },
-	search: { type: 'array' },
-	sort: { defaultValue: 'meta.label', type: 'string' },
-	direction: { defaultValue: 1, type: 'number' },
+export const DEFAULT_OVERVIEW_QUERY_PARAMS = {
+	search: {
+		defaultValue: '',
+		type: 'string',
+	},
 } as const;
 
 export const OVERVIEW_COLUMNS = (
@@ -27,20 +25,28 @@ export const OVERVIEW_COLUMNS = (
 	mySecurityRights: string[]
 ): TableColumn<WorkflowStatusesOverviewTableRow>[] => {
 	const canUpdate = rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityRights, [
-		// rolesRightsConnector.securityRights.update,
+		rolesRightsConnector.securityRights.updateWorkflowStatus,
 	]);
 
 	return [
 		{
 			label: t(CORE_TRANSLATIONS.TABLE_NAME),
-			value: 'label',
+			value: 'name',
 			width: '50%',
-			component(value: any, { workflowStatusUuid, description }) {
+			component(value: any, { workflowStatusUuid, description, removable }) {
 				return (
 					<>
-						<AUILink to={`${workflowStatusUuid}/bewerken`} component={Link}>
-							<EllipsisWithTooltip>{value}</EllipsisWithTooltip>
-						</AUILink>
+						{canUpdate && removable ? (
+							<AUILink to={`${workflowStatusUuid}/bewerken`} component={Link}>
+								<EllipsisWithTooltip>
+									{value} {!removable ? '(standaard)' : ''}
+								</EllipsisWithTooltip>
+							</AUILink>
+						) : (
+							<p>
+								{value} {!removable ? '(standaard)' : ''}
+							</p>
+						)}
 						<p className="small">
 							{description ? (
 								<EllipsisWithTooltip>{description}</EllipsisWithTooltip>
@@ -59,7 +65,11 @@ export const OVERVIEW_COLUMNS = (
 			classList: ['u-text-right'],
 			disableSorting: true,
 			width: '10%',
-			component(value, { workflowStatusUuid, navigate }) {
+			component(value, { workflowStatusUuid, navigate, removable }) {
+				if (!canUpdate || !removable) {
+					return;
+				}
+
 				return (
 					<Button
 						ariaLabel="Edit"

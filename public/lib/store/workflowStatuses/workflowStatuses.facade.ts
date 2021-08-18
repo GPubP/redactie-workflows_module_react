@@ -29,6 +29,7 @@ import {
 } from './list';
 import { getAlertMessages } from './workflowStatuses.alertMessages';
 import {
+	CreateWorkflowStatusPayload,
 	DeleteWorkflowStatusPayload,
 	GetWorkflowStatusesPaginatedPayloadOptions,
 	UpdateWorkflowStatusPayload,
@@ -104,7 +105,7 @@ export class WorkflowStatusesFacade {
 						currentPage: workflowStatusesListPaginator.currentPage,
 						lastPage: paging.totalPages,
 						total: paging.totalElements,
-						data: response?._embedded,
+						data: response?._embedded.statuses,
 					};
 				})
 				.catch(error => {
@@ -123,7 +124,7 @@ export class WorkflowStatusesFacade {
 		return this.detailQuery.hasEntity(workflowStatusUuid);
 	}
 
-	public getWorkflowStatus(
+	public async getWorkflowStatus(
 		workflowStatusUuid: string,
 		options: { force: boolean } = { force: true }
 	): Promise<void> {
@@ -137,7 +138,7 @@ export class WorkflowStatusesFacade {
 		return this.service
 			.getWorkflowStatus(workflowStatusUuid)
 			.then(response => {
-				this.detailStore.upsert(response.uuid, response);
+				this.detailStore.upsert(response.uuid as string, response);
 				this.detailStore.ui.upsert(response.uuid, { error: null, isFetching: false });
 			})
 			.catch(error => {
@@ -153,7 +154,47 @@ export class WorkflowStatusesFacade {
 			});
 	}
 
-	public updateWorkflowStatus(
+	public async createWorkflowStatus(
+		payload: CreateWorkflowStatusPayload
+	): Promise<WorkflowStatusDetailModel | void> {
+		this.detailStore.setIsCreating(true);
+		const alertMessages = getAlertMessages(payload.data.name);
+
+		return this.service
+			.createWorkflowStatus(payload)
+			.then(workflowStatus => {
+				this.detailStore.update({
+					isCreating: false,
+					error: null,
+				});
+				this.detailStore.upsert(workflowStatus.uuid as string, workflowStatus);
+				this.listPaginator.clearCache();
+
+				// Timeout because the alert should be visible on the overview page
+				setTimeout(() => {
+					showAlert(
+						WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.fetch,
+						'success',
+						alertMessages.create.success
+					);
+				}, 300);
+
+				return workflowStatus;
+			})
+			.catch(error => {
+				showAlert(
+					WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.create,
+					'error',
+					alertMessages.create.error
+				);
+				this.detailStore.update({
+					isCreating: false,
+					error,
+				});
+			});
+	}
+
+	public async updateWorkflowStatus(
 		payload: UpdateWorkflowStatusPayload
 	): Promise<WorkflowStatusDetailResponse | void> {
 		this.detailStore.setIsUpdatingEntity(true, payload.uuid);
@@ -166,14 +207,17 @@ export class WorkflowStatusesFacade {
 					isUpdating: false,
 					error: null,
 				});
-				this.detailStore.upsert(workflowStatus.uuid, workflowStatus);
+				this.detailStore.upsert(workflowStatus.uuid as string, workflowStatus);
 				this.listPaginator.clearCache();
 
-				showAlert(
-					WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.update,
-					'success',
-					alertMessages.update.success
-				);
+				// Timeout because the alert should be visible on the overview page
+				setTimeout(() => {
+					showAlert(
+						WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.fetch,
+						'success',
+						alertMessages.update.success
+					);
+				}, 300);
 
 				return workflowStatus;
 			})
@@ -190,21 +234,20 @@ export class WorkflowStatusesFacade {
 			});
 	}
 
-	public deleteWorkflowStatus(payload: DeleteWorkflowStatusPayload): Promise<void> {
+	public async deleteWorkflowStatus(payload: DeleteWorkflowStatusPayload): Promise<void> {
 		this.detailStore.setIsDeletingEntity(true, payload.uuid);
 		const alertMessages = getAlertMessages(payload.data.name);
 
 		return this.service
-			.deleteWorkflowStatus(payload.uuid)
+			.deleteWorkflowStatus(payload.uuid as string)
 			.then(() => {
 				this.detailStore.remove(payload.uuid);
 				this.listPaginator.clearCache();
 
-				// Timeout because the alert is visible on the overview page
-				// and not on the edit page
+				// Timeout because the alert should be visible on the overview page
 				setTimeout(() => {
 					showAlert(
-						WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.update,
+						WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.fetch,
 						'success',
 						alertMessages.delete.success
 					);
