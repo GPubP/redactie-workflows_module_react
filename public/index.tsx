@@ -2,9 +2,8 @@ import Core from '@redactie/redactie-core';
 import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
 
-import rolesRightsConnector from './lib/connectors/rolesRights';
-import sitesConnector from './lib/connectors/sites';
-import { WorkflowsOverview, WorkflowStatusesOverview } from './lib/views';
+import { rolesRightsConnector, sitesConnector } from './lib/connectors';
+import { WorkflowsOverview, WorkflowStatusEdit, WorkflowStatusesOverview } from './lib/views';
 import { MODULE_PATHS, SITE_PARAM } from './lib/workflows.const';
 import { WorkflowModuleRouteProps } from './lib/workflows.types';
 
@@ -81,7 +80,7 @@ if (rolesRightsConnector.api) {
 			parentPath: MODULE_PATHS.workflowRoot,
 			canShown: [
 				rolesRightsConnector.api.canShowns.securityRightsTenantCanShown([
-					// rolesRightsConnector.securityRights.readWorkflowStatuses,
+					rolesRightsConnector.securityRights.readWorkflowStatus,
 				]),
 			],
 		},
@@ -90,6 +89,25 @@ if (rolesRightsConnector.api) {
 				path: MODULE_PATHS.workflowStatusesOverview,
 				breadcrumb: false,
 				component: WorkflowStatusesOverview,
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsTenantGuard([
+							rolesRightsConnector.securityRights.readWorkflowStatus,
+						]),
+					],
+				},
+			},
+			{
+				path: MODULE_PATHS.workflowStatusEdit,
+				breadcrumb: false,
+				component: WorkflowStatusEdit,
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsTenantGuard([
+							rolesRightsConnector.securityRights.updateWorkflowStatus,
+						]),
+					],
+				},
 			},
 		],
 	});

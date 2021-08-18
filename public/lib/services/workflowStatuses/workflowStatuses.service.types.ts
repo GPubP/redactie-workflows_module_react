@@ -1,7 +1,14 @@
 import { EmbeddedResponse } from '@redactie/utils';
 
+export interface WorkflowStatusData {
+	name: string;
+	systemName: string;
+	description: string;
+}
+
 export interface WorkflowStatus {
 	uuid: string;
+	data: WorkflowStatusData;
 }
 /**
  * =========================
