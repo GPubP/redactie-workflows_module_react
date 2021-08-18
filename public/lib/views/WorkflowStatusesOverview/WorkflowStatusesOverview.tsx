@@ -141,7 +141,7 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 					activeSorting={activeSorting}
 					totalValues={pagination?.total || 0}
 					loading={loading}
-					loadDataMessage="Views ophalen"
+					loadDataMessage="Statussen ophalen"
 					noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-RESULT'])}
 				/>
 			</>
