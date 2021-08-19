@@ -10,7 +10,7 @@ export interface WorkflowStatusData {
 
 export interface WorkflowStatusMeta {
 	removable?: boolean;
-	site?: boolean;
+	site?: string;
 }
 
 export interface WorkflowStatus {

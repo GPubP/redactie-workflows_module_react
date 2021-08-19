@@ -1,7 +1,41 @@
 import { EmbeddedResponse } from '@redactie/utils';
 
+export interface WorkflowRequirement {
+	type: string;
+	value: unknown;
+}
+
+export interface WorkflowTransition {
+	from: string;
+	to: string;
+	requirements: WorkflowRequirement[];
+}
+
+export interface WorkflowData {
+	name: string;
+	description: string;
+	category?: string;
+	transitions: WorkflowTransition[];
+}
+
+export interface WorkflowMeta {
+	removable?: boolean;
+	site?: string;
+	deleted?: boolean;
+	default?: boolean;
+	lastEditor?: string;
+	tenant?: string;
+	active?: boolean;
+	occurrences?: {
+		uuid: string;
+		name: string;
+	}[];
+}
+
 export interface Workflow {
-	id: number;
+	uuid?: string;
+	data: WorkflowData;
+	meta?: WorkflowMeta;
 }
 /**
  * =========================
@@ -10,8 +44,15 @@ export interface Workflow {
  * =========================
  */
 
-export type WorkflowsResponse = EmbeddedResponse<Workflow>;
-export type WorkflowDetailResponse = Workflow;
+export type WorkflowsResponse = EmbeddedResponse<Workflow> & {
+	_embedded: {
+		workflows: Workflow[];
+	};
+};
+export type WorkflowDetailResponse = Workflow & {
+	uuid: string;
+	meta: WorkflowMeta;
+};
 
 /**
  * =========================
@@ -19,3 +60,17 @@ export type WorkflowDetailResponse = Workflow;
  * - Define all payload interfaces
  * =========================
  */
+
+export type CreateWorkflowPayload = {
+	data: {
+		name: string;
+		description: string;
+	};
+};
+
+export type DeleteWorkflowPayload = WorkflowDetailResponse;
+
+export type ActivateWorkflowPayload = {
+	uuid: string;
+	name: string;
+};

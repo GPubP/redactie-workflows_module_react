@@ -25,7 +25,7 @@ import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../
 import { usePaginatedWorkflowStatuses } from '../../hooks';
 import useRoutesBreadcrumbs from '../../hooks/useRoutesBreadcrumbs/useRoutesBreadcrumbs';
 import { DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS } from '../../services/workflowStatuses';
-import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from '../../store/workflowStatuses.const';
+import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from '../../store/workflowStatuses/workflowStatuses.const';
 import { MODULE_PATHS } from '../../workflows.const';
 import { WorkflowModuleRouteProps, WorkflowsMatchProps } from '../../workflows.types';
 

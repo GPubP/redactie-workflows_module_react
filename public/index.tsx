@@ -4,6 +4,8 @@ import React, { FC, useMemo } from 'react';
 
 import { rolesRightsConnector, sitesConnector } from './lib/connectors';
 import {
+	WorkflowCreate,
+	WorkflowSettings,
 	WorkflowsOverview,
 	WorkflowStatusCreate,
 	WorkflowStatusEdit,
@@ -53,7 +55,7 @@ if (rolesRightsConnector.api) {
 			order: 2,
 			canShown: [
 				rolesRightsConnector.api.canShowns.securityRightsTenantCanShown([
-					// rolesRightsConnector.securityRights.readWorkflows,
+					rolesRightsConnector.securityRights.readWorkflows,
 				]),
 			],
 		},
@@ -67,6 +69,33 @@ if (rolesRightsConnector.api) {
 					order: 0,
 					parentPath: MODULE_PATHS.workflowRoot,
 				},
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsTenantGuard([
+							rolesRightsConnector.securityRights.readWorkflows,
+						]),
+					],
+				},
+			},
+			{
+				path: MODULE_PATHS.workflowCreate,
+				breadcrumb: false,
+				component: WorkflowCreate,
+				redirect: MODULE_PATHS.workflowCreateSettings,
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsTenantGuard([
+							rolesRightsConnector.securityRights.createWorkflows,
+						]),
+					],
+				},
+				routes: [
+					{
+						path: MODULE_PATHS.workflowCreateSettings,
+						breadcrumb: false,
+						component: WorkflowSettings,
+					},
+				],
 			},
 		],
 	});
@@ -85,7 +114,7 @@ if (rolesRightsConnector.api) {
 			parentPath: MODULE_PATHS.workflowRoot,
 			canShown: [
 				rolesRightsConnector.api.canShowns.securityRightsTenantCanShown([
-					// rolesRightsConnector.securityRights.readWorkflowStatus,
+					rolesRightsConnector.securityRights.readWorkflowStatus,
 				]),
 			],
 		},
