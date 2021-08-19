@@ -10,7 +10,7 @@ import { CORE_TRANSLATIONS, rolesRightsConnector } from '../../connectors';
 import { WorkflowStatusesOverviewTableRow } from './workflowStatusesOverview.types';
 
 export const DEFAULT_FILTER_FORM = {
-	name: '',
+	search: '',
 };
 
 export const DEFAULT_OVERVIEW_QUERY_PARAMS = {

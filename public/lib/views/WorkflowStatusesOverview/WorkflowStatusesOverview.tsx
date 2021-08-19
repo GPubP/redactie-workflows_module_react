@@ -58,20 +58,24 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 	// Set initial values with query params
 	useEffect(() => {
 		setFilterFormState({
-			name: query.search ?? '',
+			search: query.search ?? '',
 		});
 	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	/**
 	 * Functions
 	 */
-	const createFilters = (values: FilterFormState): FilterItem[] => {
+	const createFilters = ({ search }: FilterFormState): FilterItem[] => {
 		return [
-			{
-				key: 'search',
-				valuePrefix: 'Zoekterm',
-				value: values.name,
-			},
+			...(search
+				? [
+						{
+							key: 'search',
+							valuePrefix: 'Zoekterm',
+							value: search,
+						},
+				  ]
+				: []),
 		].filter(f => !!f.value);
 	};
 
@@ -108,7 +112,7 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 		setFilterFormState(values);
 		setQuery({
 			page: 1,
-			search: values.name || undefined,
+			search: values.search || undefined,
 		});
 	};
 

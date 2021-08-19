@@ -2,7 +2,7 @@ import { FormikHelpers, FormikState } from 'formik';
 export type ResetForm = (nextState?: Partial<FormikState<FilterFormState>> | undefined) => void;
 
 export interface FilterFormState {
-	name: string;
+	search: string;
 }
 
 export interface FilterFormProps {

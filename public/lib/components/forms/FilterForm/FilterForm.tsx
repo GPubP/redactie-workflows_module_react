@@ -38,8 +38,8 @@ const FilterForm: FC<FilterFormProps> = ({
 									<Field
 										as={TextField}
 										label="Naam"
-										name="name"
-										id="name"
+										name="search"
+										id="search"
 										placeholder="Zoeken op naam"
 										iconright="search"
 									/>
