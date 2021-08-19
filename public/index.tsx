@@ -5,6 +5,7 @@ import React, { FC, useMemo } from 'react';
 import { rolesRightsConnector, sitesConnector } from './lib/connectors';
 import {
 	WorkflowCreate,
+	WorkflowEdit,
 	WorkflowSettings,
 	WorkflowsOverview,
 	WorkflowStatusCreate,
@@ -55,7 +56,7 @@ if (rolesRightsConnector.api) {
 			order: 2,
 			canShown: [
 				rolesRightsConnector.api.canShowns.securityRightsTenantCanShown([
-					rolesRightsConnector.securityRights.readWorkflows,
+					// rolesRightsConnector.securityRights.readWorkflows,
 				]),
 			],
 		},
@@ -72,7 +73,7 @@ if (rolesRightsConnector.api) {
 				guardOptions: {
 					guards: [
 						rolesRightsConnector.api.guards.securityRightsTenantGuard([
-							rolesRightsConnector.securityRights.readWorkflows,
+							// rolesRightsConnector.securityRights.readWorkflows,
 						]),
 					],
 				},
@@ -85,7 +86,7 @@ if (rolesRightsConnector.api) {
 				guardOptions: {
 					guards: [
 						rolesRightsConnector.api.guards.securityRightsTenantGuard([
-							rolesRightsConnector.securityRights.createWorkflows,
+							// rolesRightsConnector.securityRights.createWorkflows,
 						]),
 					],
 				},
@@ -95,6 +96,31 @@ if (rolesRightsConnector.api) {
 						breadcrumb: false,
 						component: WorkflowSettings,
 					},
+				],
+			},
+			{
+				path: MODULE_PATHS.workflowEdit,
+				breadcrumb: false,
+				component: WorkflowEdit,
+				redirect: MODULE_PATHS.workflowSettings,
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsTenantGuard([
+							// rolesRightsConnector.securityRights.updateWorkflows,
+						]),
+					],
+				},
+				routes: [
+					{
+						path: MODULE_PATHS.workflowSettings,
+						breadcrumb: false,
+						component: WorkflowSettings,
+					},
+					// {
+					// 	path: MODULE_PATHS.workflowTransitions,
+					// 	breadcrumb: false,
+					// 	component: WorkflowTransitions,
+					// },
 				],
 			},
 		],

@@ -15,6 +15,7 @@ import {
 	LeavePrompt,
 	useDetectValueChanges,
 	useNavigate,
+	useOnNextRender,
 } from '@redactie/utils';
 import { FormikProps, FormikValues } from 'formik';
 import React, { FC, ReactElement, useMemo, useRef, useState } from 'react';
@@ -25,7 +26,7 @@ import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors';
 import { useWorkflowsUIStates } from '../../hooks';
 import { WorkflowDetailModel, workflowsFacade } from '../../store/workflows';
 import { WORKFLOW_ALERT_CONTAINER_IDS } from '../../store/workflows/workflows.const';
-import { DETAIL_TAB_MAP, MODULE_PATHS } from '../../workflows.const';
+import { MODULE_PATHS } from '../../workflows.const';
 import { WorkflowDetailRouteProps } from '../../workflows.types';
 
 const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
@@ -51,9 +52,10 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 
 	const { navigate } = useNavigate();
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(
-		!isLoading && !!workflow,
+		!isLoading && !!workflow && !!formValue,
 		formValue
 	);
+	const resetChangeDetectionOnNextRender = useOnNextRender(() => resetChangeDetection());
 
 	/**
 	 * Methods
@@ -79,8 +81,9 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 			});
 		}
 
-		onSubmit({ ...workflow, ...value }, DETAIL_TAB_MAP.settings);
-		resetChangeDetection();
+		await onSubmit({ ...workflow, ...value });
+		// Otherwise the reset change detection is called to early
+		resetChangeDetectionOnNextRender();
 	};
 
 	const onDeletePromptConfirm = async (): Promise<void> => {

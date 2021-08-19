@@ -25,7 +25,7 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<WorkflowsOvervie
 		{
 			label: t(CORE_TRANSLATIONS.TABLE_NAME),
 			value: 'name',
-			width: '50%',
+			width: '20%',
 			component(value: any, { workflowUuid, description, isDefault }) {
 				return (
 					<>

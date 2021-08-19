@@ -69,6 +69,7 @@ export type CreateWorkflowPayload = {
 };
 
 export type DeleteWorkflowPayload = WorkflowDetailResponse;
+export type UpdateWorkflowPayload = WorkflowDetailResponse;
 
 export type ActivateWorkflowPayload = {
 	uuid: string;

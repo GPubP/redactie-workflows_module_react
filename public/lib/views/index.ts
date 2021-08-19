@@ -4,3 +4,4 @@ export { default as WorkflowStatusEdit } from './WorkflowStatusEdit/WorkflowStat
 export { default as WorkflowStatusCreate } from './WorkflowStatusCreate/WorkflowStatusCreate';
 export { default as WorkflowCreate } from './WorkflowCreate/WorkflowCreate';
 export { default as WorkflowSettings } from './WorkflowSettings/WorkflowSettings';
+export { default as WorkflowEdit } from './WorkflowEdit/WorkflowEdit';

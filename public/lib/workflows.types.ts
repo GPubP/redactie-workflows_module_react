@@ -1,5 +1,5 @@
 import { ModuleRouteConfig, RouteConfigComponentProps } from '@redactie/redactie-core';
-import { AlertProps, ContextHeaderTab } from '@redactie/utils';
+import { AlertProps } from '@redactie/utils';
 
 import { CreateWorkflowPayload } from './services/workflows';
 import { WorkflowDetailModel } from './store/workflows';
@@ -34,5 +34,5 @@ export interface WorkflowDetailRouteProps<Params = WorkflowRouteParams>
 	readonly allowedPaths?: string[];
 	readonly workflow: WorkflowDetailModel;
 	onCancel: () => void;
-	onSubmit: (data: CreateWorkflowPayload | WorkflowDetailModel, tab: ContextHeaderTab) => void;
+	onSubmit: (data: CreateWorkflowPayload | WorkflowDetailModel) => Promise<void>;
 }

@@ -7,6 +7,7 @@ import {
 	ActivateWorkflowPayload,
 	CreateWorkflowPayload,
 	DeleteWorkflowPayload,
+	UpdateWorkflowPayload,
 	WorkflowDetailResponse,
 	workflowsApiService,
 	WorkflowsApiService,
@@ -34,6 +35,7 @@ import { WORKFLOW_ALERT_CONTAINER_IDS } from './workflows.const';
 import {
 	CreateWorkflowsPayloadOptions,
 	DeleteWorkflowsPayloadOptions,
+	GetWorkflowPayloadOptions,
 	GetWorkflowsPaginatedPayloadOptions,
 } from './workflows.types';
 
@@ -118,6 +120,43 @@ export class WorkflowsFacade {
 		);
 	}
 
+	// DETAIL FUNCTIONS
+	public hasWorkflow(workflowUuid: string): boolean {
+		return this.detailQuery.hasEntity(workflowUuid);
+	}
+
+	public async getWorkflow(
+		workflowUuid: string,
+		options?: GetWorkflowPayloadOptions
+	): Promise<void> {
+		const defaultOptions = {
+			alertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.update,
+			force: false,
+		};
+		const serviceOptions = {
+			...defaultOptions,
+			...options,
+		};
+		if (this.detailQuery.hasEntity(workflowUuid) && !serviceOptions.force) {
+			return Promise.resolve();
+		}
+		const alertMessages = getAlertMessages();
+		this.detailStore.setIsFetchingEntity(true, workflowUuid);
+		return this.service
+			.getWorkflow(workflowUuid)
+			.then(response => {
+				this.detailStore.upsert(response.uuid, response);
+				this.detailStore.ui.upsert(response.uuid, { error: null, isFetching: false });
+			})
+			.catch(error => {
+				showAlert(serviceOptions.alertContainerId, 'error', alertMessages.fetchOne.error);
+				this.detailStore.ui.upsert(workflowUuid, {
+					error,
+					isFetching: false,
+				});
+			});
+	}
+
 	public async createWorkflow(
 		payload: CreateWorkflowPayload,
 		options: CreateWorkflowsPayloadOptions = {
@@ -152,6 +191,43 @@ export class WorkflowsFacade {
 				showAlert(options.errorAlertContainerId, 'error', alertMessages.create.error);
 				this.detailStore.update({
 					isCreating: false,
+					error,
+				});
+			});
+	}
+
+	public async updateWorkflow(
+		payload: UpdateWorkflowPayload
+	): Promise<WorkflowDetailResponse | void> {
+		this.detailStore.setIsUpdatingEntity(true, payload.uuid);
+		const alertMessages = getAlertMessages(payload.data.name);
+
+		return this.service
+			.updateWorkflow(payload)
+			.then(workflow => {
+				this.detailStore.ui.update(payload.uuid, {
+					isUpdating: false,
+					error: null,
+				});
+				this.detailStore.upsert(workflow.uuid, workflow);
+				this.listPaginator.clearCache();
+
+				showAlert(
+					WORKFLOW_ALERT_CONTAINER_IDS.settings,
+					'success',
+					alertMessages.update.success
+				);
+
+				return workflow;
+			})
+			.catch(error => {
+				showAlert(
+					WORKFLOW_ALERT_CONTAINER_IDS.settings,
+					'error',
+					alertMessages.update.error
+				);
+				this.detailStore.ui.update(payload.uuid, {
+					isUpdating: false,
 					error,
 				});
 			});

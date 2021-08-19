@@ -5,6 +5,7 @@ import { api } from '../api';
 import { DEFAULT_WORKFLOWS_SEARCH_PARAMS, WORKFLOWS_PREFIX_URL } from './workflows.service.const';
 import {
 	CreateWorkflowPayload,
+	UpdateWorkflowPayload,
 	WorkflowDetailResponse,
 	WorkflowsResponse,
 } from './workflows.service.types';
@@ -24,6 +25,25 @@ export class WorkflowsApiService {
 
 	public async getWorkflow(workflowUuid: string): Promise<WorkflowDetailResponse> {
 		return await api.get(`${WORKFLOWS_PREFIX_URL}/${workflowUuid}`).json();
+	}
+
+	public async updateWorkflow(workflow: UpdateWorkflowPayload): Promise<WorkflowDetailResponse> {
+		// TODO: Fix API
+		return await api
+			.put(`${WORKFLOWS_PREFIX_URL}/${workflow.uuid}`, {
+				json: {
+					...workflow,
+					data: {
+						...workflow.data,
+						transitions: [],
+					},
+				},
+			})
+			.json();
+
+		// return await api
+		// 	.put(`${WORKFLOWS_PREFIX_URL}/${workflow.uuid}/`, { json: workflow })
+		// 	.json();
 	}
 
 	public async deleteWorkflow(workflowUuid: string): Promise<void> {

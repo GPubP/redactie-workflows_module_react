@@ -16,6 +16,7 @@ const WorkflowSettingsForm: FC<WorkflowSettingFormProps> = ({
 }) => {
 	return (
 		<Formik
+			enableReinitialize
 			innerRef={instance => isFunction(formikRef) && formikRef(instance)}
 			initialValues={workflow}
 			onSubmit={onSubmit}
@@ -31,7 +32,7 @@ const WorkflowSettingsForm: FC<WorkflowSettingFormProps> = ({
 								<Field
 									as={TextField}
 									description="Geef de workflow een korte en duidelijke naam."
-									id="name"
+									id="data.name"
 									label="Naam"
 									name="data.name"
 									required
@@ -45,7 +46,7 @@ const WorkflowSettingsForm: FC<WorkflowSettingFormProps> = ({
 							<div className="col-xs-12">
 								<Field
 									as={Textarea}
-									id="description"
+									id="data.description"
 									label="Beschrijving"
 									name="data.description"
 									required

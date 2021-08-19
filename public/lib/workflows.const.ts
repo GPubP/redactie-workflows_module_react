@@ -47,6 +47,7 @@ export const BREADCRUMB_OPTIONS = {
 		`${TENANT_ROOT}`,
 		`${TENANT_ROOT}/sites`,
 		`${TENANT_ROOT}${WORKFLOW_STATUSES_BASE_PATH}/:workflowStatusUuid([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})`,
+		`${TENANT_ROOT}${WORKFLOW_DETAIL_BASE_PATH}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})`,
 	],
 };
 

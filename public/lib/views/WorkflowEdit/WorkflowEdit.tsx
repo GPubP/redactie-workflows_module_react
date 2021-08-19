@@ -10,20 +10,25 @@ import {
 	useNavigate,
 	useTenantContext,
 } from '@redactie/utils';
-import React, { FC, ReactElement, useMemo } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors';
-import { useActiveTabs, useRoutesBreadcrumbs } from '../../hooks';
-import { CreateWorkflowPayload } from '../../services/workflows';
+import {
+	useActiveTabs,
+	useRoutesBreadcrumbs,
+	useWorkflow,
+	useWorkflowsUIStates,
+} from '../../hooks';
+import { UpdateWorkflowPayload } from '../../services/workflows';
 import { workflowsFacade } from '../../store/workflows';
 import { WORKFLOW_ALERT_CONTAINER_IDS } from '../../store/workflows/workflows.const';
 import { DETAIL_TABS, MODULE_PATHS } from '../../workflows.const';
-import { WorkflowModuleRouteProps } from '../../workflows.types';
+import { WorkflowRouteProps } from '../../workflows.types';
 
-import { WORKFLOW_CREATE_ALLOWED_PATHS } from './workflowCreate.const';
+const WorkflowEdit: FC<WorkflowRouteProps> = ({ location, route, match }) => {
+	const { workflowUuid } = match.params;
 
-const WorkflowCreate: FC<WorkflowModuleRouteProps> = ({ location, route }) => {
 	/**
 	 * Hooks
 	 */
@@ -32,7 +37,8 @@ const WorkflowCreate: FC<WorkflowModuleRouteProps> = ({ location, route }) => {
 
 	const guardsMeta = useMemo(() => ({ tenantId }), [tenantId]);
 	const [t] = useCoreTranslation();
-	const activeTabs = useActiveTabs(DETAIL_TABS.slice(0, 1), location.pathname);
+	const [initialLoading, setInitialLoading] = useState(true);
+	const activeTabs = useActiveTabs(DETAIL_TABS, location.pathname);
 	const { generatePath, navigate } = useNavigate();
 	const breadcrumbs = useRoutesBreadcrumbs([
 		{
@@ -40,44 +46,36 @@ const WorkflowCreate: FC<WorkflowModuleRouteProps> = ({ location, route }) => {
 			target: generatePath(MODULE_PATHS.workflowsOverview),
 		},
 	]);
+	const [workflow] = useWorkflow(workflowUuid);
+	const [, detailState] = useWorkflowsUIStates(workflowUuid);
+
+	// Set initial loading
+	useEffect(() => {
+		if (initialLoading && detailState && !detailState.isFetching && workflow) {
+			return setInitialLoading(false);
+		}
+	}, [initialLoading, detailState, workflow]);
 
 	/**
 	 * Methods
 	 */
 
-	const generateEmptyWorkflow = (): CreateWorkflowPayload => ({
-		data: {
-			name: '',
-			description: '',
-		},
-	});
-
-	const createWorkflow = async (payload: CreateWorkflowPayload): Promise<void> => {
-		return workflowsFacade
-			.createWorkflow(payload, {
-				errorAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.create,
-				successAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.transitions,
-			})
-			.then(response => {
-				if (response && response.uuid) {
-					navigate(MODULE_PATHS.workflowTransitions, {
-						workflowUuid: response.uuid,
-					});
-				}
-			});
+	const updateWorkflow = async (body: UpdateWorkflowPayload): Promise<void> => {
+		await workflowsFacade.updateWorkflow(body);
 	};
 
 	/**
 	 * Render
 	 */
-	const pageTitle = `Workflow ${t(CORE_TRANSLATIONS.ROUTING_CREATE)}`;
+	const pageTitle = `${workflow?.data.name ? `'${workflow?.data.name}'` : 'Workflow'} ${t(
+		CORE_TRANSLATIONS.ROUTING_UPDATE
+	)}`;
 
 	const renderChildRoutes = (): ReactElement | null => {
 		const extraOptions = {
-			allowedPaths: WORKFLOW_CREATE_ALLOWED_PATHS,
-			workflow: generateEmptyWorkflow(),
+			workflow,
 			onCancel: () => navigate(MODULE_PATHS.workflowsOverview),
-			onSubmit: createWorkflow,
+			onSubmit: updateWorkflow,
 		};
 
 		return (
@@ -92,10 +90,12 @@ const WorkflowCreate: FC<WorkflowModuleRouteProps> = ({ location, route }) => {
 	return (
 		<>
 			<ContextHeader
-				tabs={activeTabs.slice(0, 1)}
+				tabs={activeTabs}
 				linkProps={(props: { href: string }) => ({
 					...props,
-					to: generatePath(`${MODULE_PATHS.workflowCreate}/${props.href}`),
+					to: generatePath(`${MODULE_PATHS.workflowCreate}/${props.href}`, {
+						workflowUuid,
+					}),
 					component: Link,
 				})}
 				title={pageTitle}
@@ -105,12 +105,12 @@ const WorkflowCreate: FC<WorkflowModuleRouteProps> = ({ location, route }) => {
 			<Container>
 				<AlertContainer
 					toastClassName="u-margin-bottom"
-					containerId={WORKFLOW_ALERT_CONTAINER_IDS.create}
+					containerId={WORKFLOW_ALERT_CONTAINER_IDS.update}
 				/>
-				<DataLoader loadingState={false} render={renderChildRoutes} />
+				<DataLoader loadingState={initialLoading} render={renderChildRoutes} />
 			</Container>
 		</>
 	);
 };
 
-export default WorkflowCreate;
+export default WorkflowEdit;
