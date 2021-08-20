@@ -99,6 +99,12 @@ const WorkflowEdit: FC<WorkflowRouteProps> = ({ location, route, match }) => {
 					component: Link,
 				})}
 				title={pageTitle}
+				badges={[
+					{
+						name: 'Workflow',
+						type: 'primary',
+					},
+				]}
 			>
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 			</ContextHeader>
