@@ -11,6 +11,7 @@ import {
 	WorkflowStatusCreate,
 	WorkflowStatusEdit,
 	WorkflowStatusesOverview,
+	WorkflowTransitions,
 } from './lib/views';
 import { MODULE_PATHS, SITE_PARAM } from './lib/workflows.const';
 import { WorkflowModuleRouteProps } from './lib/workflows.types';
@@ -116,11 +117,11 @@ if (rolesRightsConnector.api) {
 						breadcrumb: false,
 						component: WorkflowSettings,
 					},
-					// {
-					// 	path: MODULE_PATHS.workflowTransitions,
-					// 	breadcrumb: false,
-					// 	component: WorkflowTransitions,
-					// },
+					{
+						path: MODULE_PATHS.workflowTransitions,
+						breadcrumb: false,
+						component: WorkflowTransitions,
+					},
 				],
 			},
 		],

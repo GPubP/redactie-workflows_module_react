@@ -28,22 +28,9 @@ export class WorkflowsApiService {
 	}
 
 	public async updateWorkflow(workflow: UpdateWorkflowPayload): Promise<WorkflowDetailResponse> {
-		// TODO: Fix API
 		return await api
-			.put(`${WORKFLOWS_PREFIX_URL}/${workflow.uuid}`, {
-				json: {
-					...workflow,
-					data: {
-						...workflow.data,
-						transitions: [],
-					},
-				},
-			})
+			.put(`${WORKFLOWS_PREFIX_URL}/${workflow.uuid}/`, { json: workflow })
 			.json();
-
-		// return await api
-		// 	.put(`${WORKFLOWS_PREFIX_URL}/${workflow.uuid}/`, { json: workflow })
-		// 	.json();
 	}
 
 	public async deleteWorkflow(workflowUuid: string): Promise<void> {

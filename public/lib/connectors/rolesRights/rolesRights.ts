@@ -4,10 +4,10 @@ import { RolesRightsModuleAPI } from '@redactie/roles-rights-module';
 class RolesRightsConnector {
 	public apiName = 'roles-rights-module';
 	public securityRights = {
-		createWorkflows: 'workflows_create',
-		updateWorkflows: 'workflows_update',
-		readWorkflows: 'workflows_read',
-		deleteWorkflows: 'workflows_delete',
+		createWorkflow: 'workflow_create',
+		updateWorkflow: 'workflow_update',
+		readWorkflow: 'workflow_read',
+		deleteWorkflow: 'workflow_delete',
 		createWorkflowStatus: 'workflow-status_create',
 		updateWorkflowStatus: 'workflow-status_update',
 		readWorkflowStatus: 'workflow-status_read',

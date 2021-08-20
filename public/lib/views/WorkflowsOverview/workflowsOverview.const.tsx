@@ -26,10 +26,10 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<WorkflowsOvervie
 			label: t(CORE_TRANSLATIONS.TABLE_NAME),
 			value: 'name',
 			width: '20%',
-			component(value: any, { workflowUuid, description, isDefault }) {
+			component(value: any, { description, isDefault, detailPath }) {
 				return (
 					<>
-						<AUILink to={`${workflowUuid}/instellingen`} component={Link}>
+						<AUILink to={detailPath} component={Link}>
 							<EllipsisWithTooltip>
 								{value} {!isDefault ? '(standaard)' : ''}
 							</EllipsisWithTooltip>
