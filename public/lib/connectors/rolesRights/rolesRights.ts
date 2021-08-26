@@ -8,10 +8,10 @@ class RolesRightsConnector {
 		updateWorkflows: 'workflows_update',
 		readWorkflows: 'workflows_read',
 		deleteWorkflows: 'workflows_delete',
-		createWorkflowStatuses: 'workflow-statuses_create',
-		updateWorkflowStatuses: 'workflow-statuses_update',
-		readWorkflowStatuses: 'workflow-statuses_read',
-		deleteWorkflowStatuses: 'workflow-statuses_delete',
+		createWorkflowStatus: 'workflow-status_create',
+		updateWorkflowStatus: 'workflow-status_update',
+		readWorkflowStatus: 'workflow-status_read',
+		deleteWorkflowStatus: 'workflow-status_delete',
 	};
 	public api: RolesRightsModuleAPI;
 

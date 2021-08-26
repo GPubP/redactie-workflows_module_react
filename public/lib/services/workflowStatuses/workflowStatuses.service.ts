@@ -1,5 +1,9 @@
 import { parseSearchParams, SearchParams } from '@redactie/utils';
 
+import {
+	CreateWorkflowStatusPayload,
+	UpdateWorkflowStatusPayload,
+} from '../../store/workflowStatuses/workflowStatuses.types';
 import { api } from '../api';
 
 import {
@@ -24,6 +28,24 @@ export class WorkflowStatusesApiService {
 		workflowStatusId: string
 	): Promise<WorkflowStatusDetailResponse> {
 		return await api.get(`${WORKFLOW_STATUSES_PREFIX_URL}/${workflowStatusId}`).json();
+	}
+
+	public async createWorkflowStatus(
+		workflowStatus: CreateWorkflowStatusPayload
+	): Promise<WorkflowStatusDetailResponse> {
+		return await api.post(`${WORKFLOW_STATUSES_PREFIX_URL}`, { json: workflowStatus }).json();
+	}
+
+	public async deleteWorkflowStatus(workflowStatusId: string): Promise<void> {
+		return await api.delete(`${WORKFLOW_STATUSES_PREFIX_URL}/${workflowStatusId}`).json();
+	}
+
+	public async updateWorkflowStatus(
+		workflowStatus: UpdateWorkflowStatusPayload
+	): Promise<WorkflowStatusDetailResponse> {
+		return await api
+			.put(`${WORKFLOW_STATUSES_PREFIX_URL}/${workflowStatus.uuid}`, { json: workflowStatus })
+			.json();
 	}
 }
 

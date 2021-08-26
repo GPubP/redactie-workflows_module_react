@@ -1,7 +1,22 @@
 import { EmbeddedResponse } from '@redactie/utils';
 
+export interface WorkflowStatusData {
+	name: string;
+	description: string;
+	systemName?: string;
+	technicalState?: string;
+	category?: string;
+}
+
+export interface WorkflowStatusMeta {
+	removable?: boolean;
+	site?: boolean;
+}
+
 export interface WorkflowStatus {
-	uuid: string;
+	uuid?: string;
+	data: WorkflowStatusData;
+	meta?: WorkflowStatusMeta;
 }
 /**
  * =========================
@@ -10,7 +25,11 @@ export interface WorkflowStatus {
  * =========================
  */
 
-export type WorkflowStatusesResponse = EmbeddedResponse<WorkflowStatus>;
+export type WorkflowStatusesResponse = EmbeddedResponse<WorkflowStatus> & {
+	_embedded: {
+		statuses: WorkflowStatus[];
+	};
+};
 export type WorkflowStatusDetailResponse = WorkflowStatus;
 
 /**
