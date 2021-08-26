@@ -4,6 +4,9 @@ import React, { FC, useMemo } from 'react';
 
 import { rolesRightsConnector, sitesConnector } from './lib/connectors';
 import {
+	WorkflowCreate,
+	WorkflowEdit,
+	WorkflowSettings,
 	WorkflowsOverview,
 	WorkflowStatusCreate,
 	WorkflowStatusEdit,
@@ -67,6 +70,58 @@ if (rolesRightsConnector.api) {
 					order: 0,
 					parentPath: MODULE_PATHS.workflowRoot,
 				},
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsTenantGuard([
+							// rolesRightsConnector.securityRights.readWorkflows,
+						]),
+					],
+				},
+			},
+			{
+				path: MODULE_PATHS.workflowCreate,
+				breadcrumb: false,
+				component: WorkflowCreate,
+				redirect: MODULE_PATHS.workflowCreateSettings,
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsTenantGuard([
+							// rolesRightsConnector.securityRights.createWorkflows,
+						]),
+					],
+				},
+				routes: [
+					{
+						path: MODULE_PATHS.workflowCreateSettings,
+						breadcrumb: false,
+						component: WorkflowSettings,
+					},
+				],
+			},
+			{
+				path: MODULE_PATHS.workflowEdit,
+				breadcrumb: false,
+				component: WorkflowEdit,
+				redirect: MODULE_PATHS.workflowSettings,
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsTenantGuard([
+							// rolesRightsConnector.securityRights.updateWorkflows,
+						]),
+					],
+				},
+				routes: [
+					{
+						path: MODULE_PATHS.workflowSettings,
+						breadcrumb: false,
+						component: WorkflowSettings,
+					},
+					// {
+					// 	path: MODULE_PATHS.workflowTransitions,
+					// 	breadcrumb: false,
+					// 	component: WorkflowTransitions,
+					// },
+				],
 			},
 		],
 	});
@@ -85,7 +140,7 @@ if (rolesRightsConnector.api) {
 			parentPath: MODULE_PATHS.workflowRoot,
 			canShown: [
 				rolesRightsConnector.api.canShowns.securityRightsTenantCanShown([
-					// rolesRightsConnector.securityRights.readWorkflowStatus,
+					rolesRightsConnector.securityRights.readWorkflowStatus,
 				]),
 			],
 		},

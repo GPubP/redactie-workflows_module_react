@@ -8,7 +8,6 @@ import {
 	workflowStatusesApiService,
 	WorkflowStatusesApiService,
 } from '../../services/workflowStatuses';
-import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from '../workflowStatuses.const';
 
 import {
 	WorkflowStatusDetailModel,
@@ -28,6 +27,7 @@ import {
 	WorkflowStatusesListStore,
 } from './list';
 import { getAlertMessages } from './workflowStatuses.alertMessages';
+import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from './workflowStatuses.const';
 import {
 	CreateWorkflowStatusPayload,
 	DeleteWorkflowStatusPayload,

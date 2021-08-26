@@ -18,7 +18,7 @@ import { WorkflowStatusFormState } from '../../components/forms/WorkflowStatusFo
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useRoutesBreadcrumbs } from '../../hooks';
 import { workflowStatusesFacade } from '../../store/workflowStatuses';
-import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from '../../store/workflowStatuses.const';
+import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from '../../store/workflowStatuses/workflowStatuses.const';
 import { MODULE_PATHS } from '../../workflows.const';
 import { WorkflowModuleRouteProps } from '../../workflows.types';
 

@@ -25,7 +25,7 @@ import { useRoutesBreadcrumbs } from '../../hooks';
 import useWorkflowStatus from '../../hooks/useWorkflowStatus/useWorkflowStatus';
 import { WorkflowStatus } from '../../services/workflowStatuses';
 import { workflowStatusesFacade } from '../../store/workflowStatuses';
-import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from '../../store/workflowStatuses.const';
+import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from '../../store/workflowStatuses/workflowStatuses.const';
 import { DEFAULT_WORKFLOW_STATUS_DETAIL_HEADER_BADGES, MODULE_PATHS } from '../../workflows.const';
 import { WorkflowModuleRouteProps } from '../../workflows.types';
 
