@@ -1,7 +1,11 @@
 import { EmbeddedResponse } from '@redactie/utils';
 
+export enum TransitionRequirementTypes {
+	'userHasRole',
+}
+
 export interface WorkflowRequirement {
-	type: string;
+	type: TransitionRequirementTypes;
 	value: unknown;
 }
 
@@ -11,11 +15,37 @@ export interface WorkflowTransition {
 	requirements: WorkflowRequirement[];
 }
 
+export interface WorkflowPopulatedTransitionTarget {
+	uuid: string;
+	data: {
+		name: string;
+		systemName: string;
+		description: string;
+		technicalState: string;
+		category: string;
+	};
+	meta: {
+		updatedAt: string;
+		createdAt: string;
+		deleted: boolean;
+		removable: boolean;
+		lastEditor: string;
+		tenant: string;
+		site: string;
+	};
+}
+
+export interface WorkflowPopulatedTransition {
+	from: WorkflowPopulatedTransitionTarget;
+	to: WorkflowPopulatedTransitionTarget;
+	requirements: WorkflowRequirement[];
+}
+
 export interface WorkflowData {
 	name: string;
 	description: string;
 	category?: string;
-	transitions: WorkflowTransition[];
+	transitions: WorkflowTransition[] | WorkflowPopulatedTransition[];
 }
 
 export interface WorkflowMeta {

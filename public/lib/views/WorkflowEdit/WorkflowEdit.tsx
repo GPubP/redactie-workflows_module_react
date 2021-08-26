@@ -93,12 +93,18 @@ const WorkflowEdit: FC<WorkflowRouteProps> = ({ location, route, match }) => {
 				tabs={activeTabs}
 				linkProps={(props: { href: string }) => ({
 					...props,
-					to: generatePath(`${MODULE_PATHS.workflowCreate}/${props.href}`, {
+					to: generatePath(`${MODULE_PATHS.workflowEdit}/${props.href}`, {
 						workflowUuid,
 					}),
 					component: Link,
 				})}
 				title={pageTitle}
+				badges={[
+					{
+						name: 'Workflow',
+						type: 'primary',
+					},
+				]}
 			>
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 			</ContextHeader>

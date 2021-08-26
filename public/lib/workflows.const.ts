@@ -24,6 +24,7 @@ export const MODULE_PATHS = {
 
 	workflowSettings: `${WORKFLOW_DETAIL_BASE_PATH}/bewerken/instellingen`,
 	workflowTransitions: `${WORKFLOW_DETAIL_BASE_PATH}/bewerken/transities`,
+	workflowTransitionDetail: `${WORKFLOW_DETAIL_BASE_PATH}/bewerken/transities/:transitionUuid`,
 
 	// WORKFLOW STATUSES
 	workflowStatusesOverview: `${WORKFLOW_STATUSES_BASE_PATH}/overzicht`,

@@ -47,6 +47,7 @@ const WorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () 
 		mySecurityrights,
 	] = rolesRightsConnector.api.hooks.useMySecurityRightsForTenant(true);
 	const { loading, pagination } = usePaginatedWorkflows(query as SearchParams);
+	const { generatePath } = useNavigate();
 
 	useEffect(() => {
 		if (mySecurityRightsLoadingState !== LoadingState.Loading) {
@@ -125,6 +126,9 @@ const WorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () 
 		const workflowRows: WorkflowsOverviewTableRow[] = (pagination?.data || []).map(
 			workflow => ({
 				workflowUuid: workflow.uuid as string,
+				detailPath: generatePath(MODULE_PATHS.workflowEdit, {
+					workflowUuid: workflow.uuid,
+				}),
 				name: workflow.data.name,
 				description: workflow.data.description,
 				isDefault: !!workflow.meta?.default,
@@ -170,11 +174,9 @@ const WorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () 
 				<ContextHeaderActionsSection>
 					<rolesRightsConnector.api.components.SecurableRender
 						userSecurityRights={mySecurityrights}
-						requiredSecurityRights={
-							[
-								// rolesRightsConnector.securityRights.createWorkflows,
-							]
-						}
+						requiredSecurityRights={[
+							rolesRightsConnector.securityRights.createWorkflow,
+						]}
 					>
 						<Button
 							iconLeft="plus"
