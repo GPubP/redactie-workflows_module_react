@@ -76,7 +76,7 @@ export const TRANSITION_COLUMNS = (
 			classList: ['u-text-right'],
 			disableSorting: true,
 			width: '10%',
-			component(value, { from, navigate }) {
+			component(value, { uuid, navigate }) {
 				if (!canUpdate) {
 					return;
 				}
@@ -85,7 +85,7 @@ export const TRANSITION_COLUMNS = (
 					<Button
 						ariaLabel="Edit"
 						icon="edit"
-						onClick={() => navigate(from)}
+						onClick={() => navigate(uuid)}
 						type="primary"
 						transparent
 					/>

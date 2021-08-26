@@ -13,8 +13,8 @@ import {
 import { FormikProps } from 'formik';
 import React, { FC, useState } from 'react';
 
-import WorkflowStatusForm from '../../components/forms/WorkflowStatusForm/WorkflowStatusForm';
-import { WorkflowStatusFormState } from '../../components/forms/WorkflowStatusForm/workflowStatusForm.types';
+import WorkflowStatusForm from '../../components/Forms/WorkflowStatusForm/WorkflowStatusForm';
+import { WorkflowStatusFormState } from '../../components/Forms/WorkflowStatusForm/workflowStatusForm.types';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useRoutesBreadcrumbs } from '../../hooks';
 import { workflowStatusesFacade } from '../../store/workflowStatuses';
@@ -41,7 +41,7 @@ const WorkflowStatusCreate: FC<WorkflowModuleRouteProps> = () => {
 		},
 	]);
 	const [hasChanges, resetDetectValueChanges] = useDetectValueChanges(true, formState);
-	const forceNavigateToOverview = useOnNextRender(() =>
+	const [forceNavigateToOverview] = useOnNextRender(() =>
 		navigate(MODULE_PATHS.workflowStatusesOverview)
 	);
 

@@ -120,6 +120,54 @@ export class WorkflowsFacade {
 		);
 	}
 
+	public getSiteWorkflowsPaginated(
+		siteId: string,
+		searchParams: SearchParams,
+		options?: GetWorkflowsPaginatedPayloadOptions
+	): Observable<PaginationResponse<WorkflowsListModel>> {
+		const defaultOptions = {
+			alertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.overview,
+			clearCache: false,
+		};
+		const serviceOptions = {
+			...defaultOptions,
+			...options,
+		};
+		if (serviceOptions.clearCache) {
+			this.listPaginator.clearCache();
+		}
+		const alertMessages = getAlertMessages();
+
+		return from(
+			this.service
+				.getSiteWorkflows(searchParams, siteId)
+				.then(response => {
+					const paging = response._page;
+
+					this.listStore.update({
+						paging,
+						error: null,
+					});
+
+					return {
+						perPage: paging.size,
+						currentPage: workflowsListPaginator.currentPage,
+						lastPage: paging.totalPages,
+						total: paging.totalElements,
+						data: response?._embedded.workflows,
+					};
+				})
+				.catch(error => {
+					showAlert(serviceOptions.alertContainerId, 'error', alertMessages.fetch.error);
+					this.listStore.update({
+						error,
+						isFetching: false,
+					});
+					throw error;
+				})
+		);
+	}
+
 	// DETAIL FUNCTIONS
 	public hasWorkflow(workflowUuid: string): boolean {
 		return this.detailQuery.hasEntity(workflowUuid);
@@ -144,6 +192,39 @@ export class WorkflowsFacade {
 		this.detailStore.setIsFetchingEntity(true, workflowUuid);
 		return this.service
 			.getWorkflow(workflowUuid)
+			.then(response => {
+				this.detailStore.upsert(response.uuid, response);
+				this.detailStore.ui.upsert(response.uuid, { error: null, isFetching: false });
+			})
+			.catch(error => {
+				showAlert(serviceOptions.alertContainerId, 'error', alertMessages.fetchOne.error);
+				this.detailStore.ui.upsert(workflowUuid, {
+					error,
+					isFetching: false,
+				});
+			});
+	}
+
+	public async getSiteWorkflow(
+		siteId: string,
+		workflowUuid: string,
+		options?: GetWorkflowPayloadOptions
+	): Promise<void> {
+		const defaultOptions = {
+			alertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.update,
+			force: false,
+		};
+		const serviceOptions = {
+			...defaultOptions,
+			...options,
+		};
+		if (this.detailQuery.hasEntity(workflowUuid) && !serviceOptions.force) {
+			return Promise.resolve();
+		}
+		const alertMessages = getAlertMessages();
+		this.detailStore.setIsFetchingEntity(true, workflowUuid);
+		return this.service
+			.getSiteWorkflow(workflowUuid, siteId)
 			.then(response => {
 				this.detailStore.upsert(response.uuid, response);
 				this.detailStore.ui.upsert(response.uuid, { error: null, isFetching: false });
@@ -196,6 +277,46 @@ export class WorkflowsFacade {
 			});
 	}
 
+	public async createSiteWorkflow(
+		siteId: string,
+		payload: CreateWorkflowPayload,
+		options: CreateWorkflowsPayloadOptions = {
+			successAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.create,
+			errorAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.create,
+		}
+	): Promise<WorkflowDetailResponse | void> {
+		this.detailStore.setIsCreating(true);
+		const alertMessages = getAlertMessages(payload.data.name);
+
+		return this.service
+			.createSiteWorkflow(payload, siteId)
+			.then(workflow => {
+				this.detailStore.update({
+					isCreating: false,
+					error: null,
+				});
+				this.detailStore.upsert(workflow.uuid, workflow);
+				this.listPaginator.clearCache();
+
+				// Timeout because the alert should be visible on the transitions page
+				setTimeout(() => {
+					showAlert(
+						options.successAlertContainerId,
+						'success',
+						alertMessages.create.success
+					);
+				}, 300);
+				return workflow;
+			})
+			.catch(error => {
+				showAlert(options.errorAlertContainerId, 'error', alertMessages.create.error);
+				this.detailStore.update({
+					isCreating: false,
+					error,
+				});
+			});
+	}
+
 	public async updateWorkflow(
 		payload: UpdateWorkflowPayload
 	): Promise<WorkflowDetailResponse | void> {
@@ -212,8 +333,45 @@ export class WorkflowsFacade {
 				this.detailStore.upsert(workflow.uuid, workflow);
 				this.listPaginator.clearCache();
 
+				// Timeout because the alert should be visible on the edit page
+				setTimeout(() => {
+					showAlert(
+						WORKFLOW_ALERT_CONTAINER_IDS.update,
+						'success',
+						alertMessages.update.success
+					);
+				}, 300);
+
+				return workflow;
+			})
+			.catch(error => {
+				showAlert(WORKFLOW_ALERT_CONTAINER_IDS.update, 'error', alertMessages.update.error);
+				this.detailStore.ui.update(payload.uuid, {
+					isUpdating: false,
+					error,
+				});
+			});
+	}
+
+	public async updateSiteWorkflow(
+		siteId: string,
+		payload: UpdateWorkflowPayload
+	): Promise<WorkflowDetailResponse | void> {
+		this.detailStore.setIsUpdatingEntity(true, payload.uuid);
+		const alertMessages = getAlertMessages(payload.data.name);
+
+		return this.service
+			.updateSiteWorkflow(payload, siteId)
+			.then(workflow => {
+				this.detailStore.ui.update(payload.uuid, {
+					isUpdating: false,
+					error: null,
+				});
+				this.detailStore.upsert(workflow.uuid, workflow);
+				this.listPaginator.clearCache();
+
 				showAlert(
-					WORKFLOW_ALERT_CONTAINER_IDS.settings,
+					WORKFLOW_ALERT_CONTAINER_IDS.update,
 					'success',
 					alertMessages.update.success
 				);
@@ -221,11 +379,7 @@ export class WorkflowsFacade {
 				return workflow;
 			})
 			.catch(error => {
-				showAlert(
-					WORKFLOW_ALERT_CONTAINER_IDS.settings,
-					'error',
-					alertMessages.update.error
-				);
+				showAlert(WORKFLOW_ALERT_CONTAINER_IDS.update, 'error', alertMessages.update.error);
 				this.detailStore.ui.update(payload.uuid, {
 					isUpdating: false,
 					error,
@@ -237,7 +391,7 @@ export class WorkflowsFacade {
 		payload: DeleteWorkflowPayload,
 		options: DeleteWorkflowsPayloadOptions = {
 			successAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.overview,
-			errorAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.settings,
+			errorAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.update,
 		}
 	): Promise<void> {
 		this.detailStore.setIsDeletingEntity(true, payload.uuid);
@@ -245,6 +399,42 @@ export class WorkflowsFacade {
 
 		return this.service
 			.deleteWorkflow(payload.uuid)
+			.then(() => {
+				this.detailStore.remove(payload.uuid);
+				this.listPaginator.clearCache();
+
+				// Timeout because the alert is visible on the overview page
+				// and not on the edit page
+				setTimeout(() => {
+					showAlert(
+						options.successAlertContainerId,
+						'success',
+						alertMessages.delete.success
+					);
+				}, 300);
+			})
+			.catch(error => {
+				showAlert(options.errorAlertContainerId, 'error', alertMessages.delete.error);
+				this.detailStore.ui.upsert(payload.uuid, {
+					error,
+					isDeleting: false,
+				});
+			});
+	}
+
+	public async deleteSiteWorkflow(
+		siteId: string,
+		payload: DeleteWorkflowPayload,
+		options: DeleteWorkflowsPayloadOptions = {
+			successAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.overview,
+			errorAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.update,
+		}
+	): Promise<void> {
+		this.detailStore.setIsDeletingEntity(true, payload.uuid);
+		const alertMessages = getAlertMessages(payload.data.name);
+
+		return this.service
+			.deleteSiteWorkflow(payload.uuid, siteId)
 			.then(() => {
 				this.detailStore.remove(payload.uuid);
 				this.listPaginator.clearCache();
@@ -285,7 +475,7 @@ export class WorkflowsFacade {
 				this.listPaginator.clearCache();
 
 				showAlert(
-					WORKFLOW_ALERT_CONTAINER_IDS.settings,
+					WORKFLOW_ALERT_CONTAINER_IDS.update,
 					'success',
 					alertMessages.activate.success
 				);
@@ -293,7 +483,7 @@ export class WorkflowsFacade {
 			})
 			.catch(error => {
 				showAlert(
-					WORKFLOW_ALERT_CONTAINER_IDS.settings,
+					WORKFLOW_ALERT_CONTAINER_IDS.update,
 					'error',
 					alertMessages.activate.error
 				);
@@ -321,7 +511,7 @@ export class WorkflowsFacade {
 				this.listPaginator.clearCache();
 
 				showAlert(
-					WORKFLOW_ALERT_CONTAINER_IDS.settings,
+					WORKFLOW_ALERT_CONTAINER_IDS.update,
 					'success',
 					alertMessages.deactivate.success
 				);
@@ -329,7 +519,7 @@ export class WorkflowsFacade {
 			})
 			.catch(error => {
 				showAlert(
-					WORKFLOW_ALERT_CONTAINER_IDS.settings,
+					WORKFLOW_ALERT_CONTAINER_IDS.update,
 					'error',
 					alertMessages.deactivate.error
 				);

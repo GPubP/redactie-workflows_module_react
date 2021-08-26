@@ -13,7 +13,10 @@ const paginator = workflowsFacade.listPaginator;
 const subject = new Subject<SearchParams>();
 const searchParamsObservable = subject.asObservable();
 
-const usePaginatedWorkflows: UsePaginatedWorkflows = (searchParams, clearCache = false) => {
+const usePaginatedWorkflows: UsePaginatedWorkflows = (
+	searchParams,
+	options?: { clearCache?: boolean; siteId?: string }
+) => {
 	const [pagination, setPagination] = useState<PaginationResponse<WorkflowsListModel> | null>(
 		null
 	);
@@ -33,7 +36,14 @@ const usePaginatedWorkflows: UsePaginatedWorkflows = (searchParams, clearCache =
 				}),
 				tap(() => workflowsFacade.setIsFetching(true)),
 				switchMap(([, searchParams]) =>
-					paginator.getPage(() => workflowsFacade.getWorkflowsPaginated(searchParams))
+					paginator.getPage(() =>
+						options?.siteId
+							? workflowsFacade.getSiteWorkflowsPaginated(
+									options?.siteId,
+									searchParams
+							  )
+							: workflowsFacade.getWorkflowsPaginated(searchParams)
+					)
 				)
 			)
 			.subscribe(result => {
@@ -57,7 +67,7 @@ const usePaginatedWorkflows: UsePaginatedWorkflows = (searchParams, clearCache =
 		if (
 			searchParams.sort !== prevSearchParams?.sort ||
 			searchParams.search !== prevSearchParams?.search ||
-			clearCache
+			options?.clearCache
 		) {
 			paginator.clearCache();
 		}
@@ -67,10 +77,8 @@ const usePaginatedWorkflows: UsePaginatedWorkflows = (searchParams, clearCache =
 		if (searchParams.page !== prevSearchParams?.page) {
 			paginator.setPage(searchParams.page ?? 1);
 		}
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
-		clearCache,
+		options,
 		prevSearchParams,
 		searchParams,
 		searchParams.page,

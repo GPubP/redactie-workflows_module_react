@@ -8,7 +8,6 @@ import {
 } from '@acpaas-ui/react-components';
 import { ActionBar, ActionBarContentSection, Status } from '@acpaas-ui/react-editorial-components';
 import {
-	AlertContainer,
 	alertService,
 	DeletePrompt,
 	FormikOnChangeHandler,
@@ -55,7 +54,7 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 		!isLoading && !!workflow && !!formValue,
 		formValue
 	);
-	const resetChangeDetectionOnNextRender = useOnNextRender(() => resetChangeDetection());
+	const [resetChangeDetectionOnNextRender] = useOnNextRender(() => resetChangeDetection());
 
 	/**
 	 * Methods
@@ -66,7 +65,7 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 	} = {}): void => {
 		alertService.danger(
 			{ title, message },
-			{ containerId: WORKFLOW_ALERT_CONTAINER_IDS.settings }
+			{ containerId: WORKFLOW_ALERT_CONTAINER_IDS.update }
 		);
 	};
 
@@ -90,7 +89,7 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 		await workflowsFacade
 			.deleteWorkflow(workflow, {
 				successAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.overview,
-				errorAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.settings,
+				errorAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.update,
 			})
 			.then(() => navigate(MODULE_PATHS.workflowsOverview))
 			.catch(() => setShowDeleteModal(false));
@@ -221,10 +220,6 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 	 */
 	return (
 		<>
-			<AlertContainer
-				toastClassName="u-margin-bottom"
-				containerId={WORKFLOW_ALERT_CONTAINER_IDS.settings}
-			/>
 			<WorkflowSettingsForm
 				formikRef={instance => (formikRef.current = instance || undefined)}
 				workflow={workflow}

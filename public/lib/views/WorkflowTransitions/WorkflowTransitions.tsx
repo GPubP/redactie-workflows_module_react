@@ -1,11 +1,10 @@
 import { Table } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, LoadingState, useNavigate } from '@redactie/utils';
+import { LoadingState, useNavigate } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
 import { usePaginatedWorkflowStatuses } from '../../hooks';
 import { TransitionRequirementTypes, WorkflowPopulatedTransition } from '../../services/workflows';
-import { WORKFLOW_ALERT_CONTAINER_IDS } from '../../store/workflows/workflows.const';
 import { MODULE_PATHS } from '../../workflows.const';
 import { WorkflowDetailRouteProps } from '../../workflows.types';
 
@@ -41,6 +40,11 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 				},
 				transition: WorkflowPopulatedTransition
 			) => {
+				// TEMP CHECK UNTIL API IS FIXED
+				if (!transition.from) {
+					return acc;
+				}
+
 				if (!acc[transition.from.uuid]) {
 					acc[transition.from.uuid] = {
 						uuid: transition.from.uuid,
@@ -56,8 +60,11 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 									)?.value as string[]) || [],
 							},
 						],
-						navigate: (from: string) =>
-							navigate(MODULE_PATHS.workflowStatusEdit, { transitionUuid: from }),
+						navigate: (uuid: string) =>
+							navigate(MODULE_PATHS.workflowTransitionDetail, {
+								workflowStatusUuid: uuid,
+								workflowUuid: workflow.uuid,
+							}),
 					};
 				}
 				return acc;
@@ -74,8 +81,11 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 				uuid: status.uuid as string,
 				from: status.data.name,
 				to: [],
-				navigate: (from: string) =>
-					navigate(MODULE_PATHS.workflowStatusEdit, { transitionUuid: from }),
+				navigate: (uuid: string) =>
+					navigate(MODULE_PATHS.workflowTransitionDetail, {
+						workflowStatusUuid: uuid,
+						workflowUuid: workflow.uuid,
+					}),
 			};
 		});
 
@@ -106,10 +116,6 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 
 	return (
 		<>
-			<AlertContainer
-				toastClassName="u-margin-bottom"
-				containerId={WORKFLOW_ALERT_CONTAINER_IDS.settings}
-			/>
 			<p>
 				Voeg transities toe door te bepalen naar welke status een content item aangepast kan
 				worden en door welke rol(len) dit mag gebeuren. Denk eraan om voor elke status een

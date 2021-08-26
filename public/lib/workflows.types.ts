@@ -29,6 +29,16 @@ export interface WorkflowRouteProps<Params = WorkflowRouteParams>
 	routes: ModuleRouteConfig[];
 }
 
+export interface WorkflowTransitionRouteParams {
+	workflowUuid: string;
+	workflowStatusUuid: string;
+}
+
+export interface WorkflowTransitionRouteProps<Params = WorkflowTransitionRouteParams>
+	extends RouteConfigComponentProps<Params> {
+	routes: ModuleRouteConfig[];
+}
+
 export interface WorkflowDetailRouteProps<Params = WorkflowRouteParams>
 	extends RouteConfigComponentProps<Params> {
 	readonly allowedPaths?: string[];

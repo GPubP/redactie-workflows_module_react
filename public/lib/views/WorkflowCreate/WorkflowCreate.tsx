@@ -56,7 +56,7 @@ const WorkflowCreate: FC<WorkflowModuleRouteProps> = ({ location, route }) => {
 		return workflowsFacade
 			.createWorkflow(payload, {
 				errorAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.create,
-				successAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.transitions,
+				successAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.update,
 			})
 			.then(response => {
 				if (response && response.uuid) {

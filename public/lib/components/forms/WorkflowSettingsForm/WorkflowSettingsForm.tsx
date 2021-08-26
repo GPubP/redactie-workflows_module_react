@@ -17,7 +17,7 @@ const WorkflowSettingsForm: FC<WorkflowSettingFormProps> = ({
 	return (
 		<Formik
 			enableReinitialize
-			innerRef={instance => isFunction(formikRef) && formikRef(instance)}
+			innerRef={instance => isFunction(formikRef) && formikRef(instance as any)}
 			initialValues={workflow}
 			onSubmit={onSubmit}
 			validationSchema={WORKFLOW_SETTINGS_VALIDATION_SCHEMA}
