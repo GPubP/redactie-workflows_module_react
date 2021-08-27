@@ -5,7 +5,7 @@ import { WorkflowsListModel } from '../../store/workflows';
 
 export type UsePaginatedWorkflows = (
 	sitesSearchParams: SearchParams,
-	clearCache?: boolean
+	options?: { clearCache?: boolean; siteId?: string }
 ) => {
 	loading: boolean;
 	pagination: PaginationResponse<WorkflowsListModel> | null;

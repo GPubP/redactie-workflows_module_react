@@ -1,7 +1,7 @@
 import { EmbeddedResponse } from '@redactie/utils';
 
 export enum TransitionRequirementTypes {
-	'userHasRole',
+	'userHasRole' = 'userHasRole',
 }
 
 export interface WorkflowRequirement {
@@ -45,7 +45,7 @@ export interface WorkflowData {
 	name: string;
 	description: string;
 	category?: string;
-	transitions: WorkflowTransition[] | WorkflowPopulatedTransition[];
+	transitions: (WorkflowTransition | WorkflowPopulatedTransition)[];
 }
 
 export interface WorkflowMeta {

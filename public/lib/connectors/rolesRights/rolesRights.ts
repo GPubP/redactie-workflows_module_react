@@ -18,6 +18,14 @@ class RolesRightsConnector {
 	constructor() {
 		this.api = Core.modules.getModuleAPI<RolesRightsModuleAPI>(this.apiName);
 	}
+
+	public get hooks(): RolesRightsModuleAPI['hooks'] {
+		return this.api.hooks;
+	}
+
+	public get facade(): RolesRightsModuleAPI['store']['roles']['service'] {
+		return this.api.store.roles.service;
+	}
 }
 
 const rolesRightsConnector = new RolesRightsConnector();

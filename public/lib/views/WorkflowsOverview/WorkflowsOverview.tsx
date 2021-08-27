@@ -39,7 +39,7 @@ const WorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () 
 	const [filterFormState, setFilterFormState] = useState<FilterFormState>(DEFAULT_FILTER_FORM);
 	const [t] = useCoreTranslation();
 	const breadcrumbs = useRoutesBreadcrumbs();
-	const { navigate } = useNavigate();
+	const { navigate, generatePath } = useNavigate();
 	const [query, setQuery] = useAPIQueryParams(DEFAULT_OVERVIEW_QUERY_PARAMS);
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [
@@ -47,7 +47,6 @@ const WorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () 
 		mySecurityrights,
 	] = rolesRightsConnector.api.hooks.useMySecurityRightsForTenant(true);
 	const { loading, pagination } = usePaginatedWorkflows(query as SearchParams);
-	const { generatePath } = useNavigate();
 
 	useEffect(() => {
 		if (mySecurityRightsLoadingState !== LoadingState.Loading) {

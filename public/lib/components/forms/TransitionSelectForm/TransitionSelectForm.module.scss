@@ -1,0 +1,30 @@
+@import '~@a-ui/core/dist/assets/styles/_quarks';
+
+.transition-select-form {
+	display: grid;
+	grid-template-columns: 20% 5% 20% minmax(auto, 250px);
+	align-items: center;
+	gap: $spacer-xs 0;
+}
+
+.transition-select-form__from-title {
+	grid-column: 1 / 2;
+}
+
+.transition-select-form__to-title {
+	grid-column: 3 / 4;
+}
+
+.transition-select-form__from-status {
+	grid-column: 1 / 2;
+}
+
+.transition-select-form__to-status {
+	grid-column: 3 / 4;
+}
+
+.transition-select-form__arrow {
+	grid-column: 2 / 3;
+	align-self: center;
+	color: $grey;
+}

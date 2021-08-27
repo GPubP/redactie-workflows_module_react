@@ -4,7 +4,7 @@ import { WorkflowDetailModel, WorkflowDetailUIModel, workflowsFacade } from '../
 
 import { UseWorkflow } from './useWorkflow.types';
 
-const useWorkflow: UseWorkflow = workflowUuid => {
+const useWorkflow: UseWorkflow = (workflowUuid, siteId) => {
 	const [workflow, setWorkflow] = useState<WorkflowDetailModel>();
 	const [workflowUI, setWorkflowUI] = useState<WorkflowDetailUIModel>();
 
@@ -16,7 +16,9 @@ const useWorkflow: UseWorkflow = workflowUuid => {
 		const hasWorkflow = workflowsFacade.hasWorkflow(workflowUuid);
 
 		if (!hasWorkflow) {
-			workflowsFacade.getWorkflow(workflowUuid);
+			siteId
+				? workflowsFacade.getSiteWorkflow(siteId, workflowUuid)
+				: workflowsFacade.getWorkflow(workflowUuid);
 		}
 
 		const workflowSubscription = workflowsFacade
@@ -30,7 +32,7 @@ const useWorkflow: UseWorkflow = workflowUuid => {
 			workflowSubscription.unsubscribe();
 			workflowUISubscription.unsubscribe();
 		};
-	}, [workflowUuid]);
+	}, [siteId, workflowUuid]);
 
 	return [workflow, workflowUI];
 };
