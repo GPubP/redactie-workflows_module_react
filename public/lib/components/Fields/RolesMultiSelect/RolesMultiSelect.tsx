@@ -15,6 +15,7 @@ const RolesMultiSelect: React.FC<RolesMultiSelectProps> = ({ name, options = [],
 		}
 		return 'Selecteer een rol';
 	};
+
 	return (
 		<Flyout
 			trigger={
@@ -34,11 +35,10 @@ const RolesMultiSelect: React.FC<RolesMultiSelectProps> = ({ name, options = [],
 								key={`${name}-${option.value}`}
 							>
 								<Field
-									key={option.value}
 									as={Checkbox}
 									checked={values.includes(option.value)}
-									id={option.value}
-									name={option.value}
+									id={`${name}-${option.value}`}
+									name={`${name}-${option.value}`}
 									label={option.label}
 									onChange={(e: ChangeEvent<HTMLInputElement>) => {
 										if (e.target.checked) {

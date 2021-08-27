@@ -40,11 +40,6 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 				},
 				transition: WorkflowPopulatedTransition
 			) => {
-				// TEMP CHECK UNTIL API IS FIXED
-				if (!transition.from) {
-					return acc;
-				}
-
 				if (!acc[transition.from.uuid]) {
 					acc[transition.from.uuid] = {
 						uuid: transition.from.uuid,
@@ -66,7 +61,22 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 								workflowUuid: workflow.uuid,
 							}),
 					};
+
+					return acc;
 				}
+
+				acc[transition.from.uuid].to = [
+					...acc[transition.from.uuid].to,
+					{
+						name: transition.to.data.name,
+						roles:
+							(transition.requirements.find(
+								requirement =>
+									requirement.type === TransitionRequirementTypes.userHasRole
+							)?.value as string[]) || [],
+					},
+				];
+
 				return acc;
 			},
 			{}

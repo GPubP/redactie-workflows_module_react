@@ -41,7 +41,7 @@ const WorkflowStatusCreate: FC<WorkflowModuleRouteProps> = () => {
 		},
 	]);
 	const [hasChanges, resetDetectValueChanges] = useDetectValueChanges(true, formState);
-	const [forceNavigateToOverview] = useOnNextRender(() =>
+	const forceNavigateToOverview = useOnNextRender(() =>
 		navigate(MODULE_PATHS.workflowStatusesOverview)
 	);
 

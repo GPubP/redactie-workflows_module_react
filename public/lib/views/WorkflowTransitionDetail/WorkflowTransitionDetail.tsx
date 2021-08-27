@@ -54,7 +54,7 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 	const [formValue, setFormValue] = useState<TransitionSelectFormState>({});
 	const [initialLoading, setInitialLoading] = useState(true);
 	const [rolesOptions, setRolesOptions] = useState<SelectOption[]>([]);
-	const [rolesLoadingState, roles] = rolesRightsConnector.api.hooks.useTenantRoles();
+	const [rolesLoadingState, roles] = rolesRightsConnector.api.hooks.useSiteRoles();
 	const transitionName = useMemo(() => {
 		if (!pagination) {
 			return '';
@@ -82,7 +82,7 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 		!detailState?.isFetching && !isEmpty(formValue),
 		formValue
 	);
-	const [forceNavigateToOverview] = useOnNextRender(() =>
+	const forceNavigateToOverview = useOnNextRender(() =>
 		navigate(MODULE_PATHS.workflowTransitions, { workflowUuid })
 	);
 
@@ -94,15 +94,14 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 	}, [loading, rolesLoadingState, workflow]);
 
 	useEffect(() => {
-		// Change
-		rolesRightsConnector.api.store.roles.service.getTenantRoles();
+		rolesRightsConnector.api.store.roles.service.getDefaultSiteRoles();
 	}, []);
 
 	useEffect(() => {
 		const options = (roles || []).map(role => {
 			return {
-				label: role.attributes.displayName,
-				value: role.attributes.displayName,
+				label: role.name,
+				value: role.name,
 			};
 		});
 
@@ -122,7 +121,7 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 				index: number
 			) => {
 				if (transition.from.uuid === workflowStatusUuid) {
-					acc[workflowStatusUuid] = {
+					acc[transition.to.uuid] = {
 						index,
 						name: `${transition.to.uuid}.roles`,
 						from: {
@@ -182,6 +181,10 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 		let transitionsState = [...(workflow?.data.transitions || [])];
 
 		for (const transition of Object.values(values)) {
+			if (isEmpty(transition.roles)) {
+				continue;
+			}
+
 			if (isNumber(transition.index)) {
 				const requirements = transitionsState[transition.index].requirements.map(
 					requirement => {

@@ -54,7 +54,7 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 		!isLoading && !!workflow && !!formValue,
 		formValue
 	);
-	const [resetChangeDetectionOnNextRender] = useOnNextRender(() => resetChangeDetection());
+	const resetChangeDetectionOnNextRender = useOnNextRender(() => resetChangeDetection());
 
 	/**
 	 * Methods

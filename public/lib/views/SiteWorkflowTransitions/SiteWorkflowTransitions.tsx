@@ -30,9 +30,27 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 		pagesize: -1,
 	});
 	const [statusRows, setStatusRows] = useState<WorkflowTransitionsTableRow[]>([]);
+	const [rolesLoadingState, roles] = rolesRightsConnector.api.hooks.useSiteRoles();
+	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 
 	useEffect(() => {
-		if (!pagination?.data || !workflow) {
+		if (
+			!loading &&
+			mySecurityRightsLoadingState === LoadingState.Loaded &&
+			rolesLoadingState === LoadingState.Loaded
+		) {
+			console.log('loaded');
+
+			setInitialLoading(LoadingState.Loaded);
+		}
+	}, [loading, mySecurityRightsLoadingState, rolesLoadingState]);
+
+	useEffect(() => {
+		rolesRightsConnector.api.store.roles.service.getSiteRoles(siteId);
+	}, [siteId]);
+
+	useEffect(() => {
+		if (!pagination?.data || !workflow || !roles) {
 			return;
 		}
 
@@ -44,10 +62,18 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 				},
 				transition: WorkflowPopulatedTransition
 			) => {
-				// TEMP CHECK UNTIL API IS FIXED
-				if (!transition.from) {
-					return acc;
-				}
+				const roleIds =
+					(transition.requirements.find(
+						requirement => requirement.type === TransitionRequirementTypes.userHasRole
+					)?.value as string[]) || [];
+
+				const roleNames = (roles || [])?.reduce((acc: string[], role) => {
+					if (!roleIds.includes(role.id)) {
+						return acc;
+					}
+
+					return [...acc, role.attributes.displayName];
+				}, []);
 
 				if (!acc[transition.from.uuid]) {
 					acc[transition.from.uuid] = {
@@ -56,12 +82,7 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 						to: [
 							{
 								name: transition.to.data.name,
-								roles:
-									(transition.requirements.find(
-										requirement =>
-											requirement.type ===
-											TransitionRequirementTypes.userHasRole
-									)?.value as string[]) || [],
+								roles: roleNames,
 							},
 						],
 						navigate: (uuid: string) =>
@@ -71,7 +92,17 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 								siteId,
 							}),
 					};
+
+					return acc;
 				}
+
+				acc[transition.from.uuid].to = [
+					...acc[transition.from.uuid].to,
+					{
+						name: transition.to.data.name,
+						roles: roleNames,
+					},
+				];
 				return acc;
 			},
 			{}
@@ -96,7 +127,7 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 		});
 
 		setStatusRows(mapStatuses);
-	}, [pagination, workflow]); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [pagination, workflow, roles]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	/**
 	 * Methods
@@ -115,7 +146,7 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 				columns={TRANSITION_COLUMNS(t, mySecurityrights)}
 				rows={statusRows}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
-				loading={loading && mySecurityRightsLoadingState === LoadingState.Loaded}
+				loading={initialLoading !== LoadingState.Loaded}
 			/>
 		);
 	};

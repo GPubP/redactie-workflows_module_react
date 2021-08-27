@@ -59,7 +59,7 @@ const WorkflowStatusEdit: FC<WorkflowModuleRouteProps> = () => {
 			!!workflowStatus,
 		formState ?? initialFormState
 	);
-	const [forceNavigateToOverview] = useOnNextRender(() =>
+	const forceNavigateToOverview = useOnNextRender(() =>
 		navigate(MODULE_PATHS.workflowStatusesOverview)
 	);
 

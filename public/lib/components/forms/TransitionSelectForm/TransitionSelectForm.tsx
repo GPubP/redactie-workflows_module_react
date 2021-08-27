@@ -43,7 +43,6 @@ const TransitionSelectForm: FC<TransitionSelectFormProps> = ({
 
 	return (
 		<Formik
-			enableReinitialize
 			initialValues={initialState}
 			onSubmit={onSubmit}
 			validationSchema={TRANSITION_SELECT_FORM_VALIDATION_SCHEMA}
