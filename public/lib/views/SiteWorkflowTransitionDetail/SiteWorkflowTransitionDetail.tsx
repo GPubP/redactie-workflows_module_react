@@ -18,7 +18,7 @@ import { isEmpty } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { TransitionSelectForm } from '../../components';
-import { TransitionSelectFormState } from '../../components/Forms/TransitionSelectForm/TransitionSelectForm.types';
+import { TransitionSelectFormState } from '../../components/forms/TransitionSelectForm/TransitionSelectForm.types';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
 import {
 	usePaginatedWorkflowStatuses,
@@ -66,23 +66,27 @@ export const SiteWorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({
 
 		return status?.data.name;
 	}, [pagination, workflowStatusUuid]);
-	const breadcrumbs = useRoutesBreadcrumbs([
-		{
-			name: 'Workflows',
-			target: generatePath(MODULE_PATHS.site.workflowsOverview, { siteId }),
-		},
-		...(workflow?.data.name
-			? [
-					{
-						name: workflow?.data.name,
-						target: generatePath(MODULE_PATHS.site.workflowSettings, {
-							workflowUuid,
-							siteId,
-						}),
-					},
-			  ]
-			: []),
-	]);
+	const breadcrumbs = useRoutesBreadcrumbs(
+		[
+			{
+				name: 'Workflows',
+				target: generatePath(MODULE_PATHS.site.workflowsOverview, { siteId }),
+			},
+			...(workflow?.data.name
+				? [
+						{
+							name: workflow?.data.name,
+							target: generatePath(MODULE_PATHS.site.workflowSettings, {
+								workflowUuid,
+								siteId,
+							}),
+						},
+				  ]
+				: []),
+		],
+		[],
+		true
+	);
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(
 		!detailState?.isFetching && !isEmpty(formValue),
 		formValue

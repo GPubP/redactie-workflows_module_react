@@ -1,11 +1,15 @@
 import { Button, Icon } from '@acpaas-ui/react-components';
 import { TranslateFunc } from '@redactie/translations-module';
 import { TableColumn } from '@redactie/utils';
+import classnames from 'classnames/bind';
 import React from 'react';
 
 import { rolesRightsConnector } from '../../connectors';
 
+import styles from './workflowTransitions.module.scss';
 import { WorkflowTransitionsTableRow } from './workflowTransitions.types';
+
+const cx = classnames.bind(styles);
 
 export const TRANSITION_COLUMNS = (
 	t: TranslateFunc,
@@ -19,8 +23,16 @@ export const TRANSITION_COLUMNS = (
 		{
 			label: 'Van status',
 			value: 'from',
+			classList: [cx('a-table__cell--align-top')],
 			disableSorting: true,
 			width: '15%',
+			component(value) {
+				return (
+					<div className="u-flex u-flex-column">
+						<p>{value}</p>
+					</div>
+				);
+			},
 		},
 		{
 			label: '',
@@ -30,11 +42,9 @@ export const TRANSITION_COLUMNS = (
 				return (
 					<div className="u-flex u-flex-column">
 						{to.map((val, index) => (
-							<Icon
-								key={index}
-								className={index !== 0 ? 'u-margin-top-xs' : ''}
-								name="angle-right"
-							/>
+							<p key={index} className={index !== 0 ? 'u-margin-top-xs' : ''}>
+								<Icon name="angle-right" />
+							</p>
 						))}
 					</div>
 				);

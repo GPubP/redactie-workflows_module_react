@@ -36,12 +36,16 @@ const SiteWorkflowCreate: FC<WorkflowModuleRouteProps> = ({ location, route }) =
 	const [t] = useCoreTranslation();
 	const activeTabs = useActiveTabs(DETAIL_TABS.slice(0, 1), location.pathname);
 	const { generatePath, navigate } = useNavigate(SITES_ROOT);
-	const breadcrumbs = useRoutesBreadcrumbs([
-		{
-			name: 'Workflows',
-			target: generatePath(MODULE_PATHS.workflowsOverview),
-		},
-	]);
+	const breadcrumbs = useRoutesBreadcrumbs(
+		[
+			{
+				name: 'Workflows',
+				target: generatePath(MODULE_PATHS.site.workflowsOverview, { siteId }),
+			},
+		],
+		[],
+		true
+	);
 
 	/**
 	 * Methods
