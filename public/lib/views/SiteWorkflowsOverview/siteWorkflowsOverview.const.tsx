@@ -2,10 +2,12 @@ import { Link as AUILink, Button } from '@acpaas-ui/react-components';
 import { EllipsisWithTooltip, Status } from '@acpaas-ui/react-editorial-components';
 import { TranslateFunc } from '@redactie/translations-module';
 import { TableColumn } from '@redactie/utils';
+import classnames from 'classnames/bind';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { CORE_TRANSLATIONS } from '../../connectors';
+import styles from '../WorkflowTransitions/workflowTransitions.module.scss';
 
 import { WorkflowsOverviewTableRow } from './siteWorkflowsOverview.types';
 
@@ -18,12 +20,19 @@ export const DEFAULT_OVERVIEW_QUERY_PARAMS = {
 		defaultValue: '',
 		type: 'string',
 	},
+	sort: {
+		defaultValue: 'data.name',
+		type: 'string',
+	},
 } as const;
+
+const cx = classnames.bind(styles);
 
 export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<WorkflowsOverviewTableRow>[] => {
 	return [
 		{
 			label: t(CORE_TRANSLATIONS.TABLE_NAME),
+			classList: [cx('a-table__cell--align-top')],
 			value: 'name',
 			width: '20%',
 			component(value: any, { description, isDefault, detailPath }) {
@@ -72,7 +81,12 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<WorkflowsOvervie
 			classList: ['u-text-right'],
 			disableSorting: true,
 			width: '10%',
-			component(value, { workflowUuid, navigate }) {
+			component(value, { workflowUuid, navigate, isTenant }) {
+				if (isTenant) {
+					// Needed tot keep consistent spacing with buttons
+					return <div className="u-margin-top-lg" />;
+				}
+
 				return (
 					<Button
 						ariaLabel="Edit"

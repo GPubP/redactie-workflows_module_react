@@ -15,6 +15,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors';
+import { isTenantWorfklow } from '../../helpers';
 import {
 	useActiveTabs,
 	useRoutesBreadcrumbs,
@@ -42,14 +43,19 @@ const SiteWorkflowEdit: FC<WorkflowRouteProps> = ({ location, route, match }) =>
 	const [initialLoading, setInitialLoading] = useState(true);
 	const activeTabs = useActiveTabs(DETAIL_TABS, location.pathname);
 	const { generatePath, navigate } = useNavigate(SITES_ROOT);
-	const breadcrumbs = useRoutesBreadcrumbs([
-		{
-			name: 'Workflows',
-			target: generatePath(MODULE_PATHS.workflowsOverview),
-		},
-	]);
+	const breadcrumbs = useRoutesBreadcrumbs(
+		[
+			{
+				name: 'Workflows',
+				target: generatePath(MODULE_PATHS.site.workflowsOverview, { siteId }),
+			},
+		],
+		[],
+		true
+	);
 	const [workflow] = useWorkflow(workflowUuid, siteId);
 	const [, detailState] = useWorkflowsUIStates(workflowUuid);
+	const isTenant = useMemo(() => isTenantWorfklow(workflow), [workflow]);
 
 	// Set initial loading
 	useEffect(() => {
@@ -92,7 +98,7 @@ const SiteWorkflowEdit: FC<WorkflowRouteProps> = ({ location, route, match }) =>
 	return (
 		<>
 			<ContextHeader
-				tabs={activeTabs}
+				tabs={isTenant ? [] : activeTabs}
 				linkProps={(props: { href: string }) => ({
 					...props,
 					to: generatePath(`${MODULE_PATHS.site.workflowEdit}/${props.href}`, {

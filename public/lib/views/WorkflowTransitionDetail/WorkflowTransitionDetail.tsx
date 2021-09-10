@@ -17,7 +17,7 @@ import { isEmpty } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { TransitionSelectForm } from '../../components';
-import { TransitionSelectFormState } from '../../components/Forms/TransitionSelectForm/TransitionSelectForm.types';
+import { TransitionSelectFormState } from '../../components/forms/TransitionSelectForm/TransitionSelectForm.types';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
 import {
 	usePaginatedWorkflowStatuses,
@@ -174,9 +174,9 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 		setFormValue(mapStatuses);
 	}, [workflowStatusUuid, workflow, pagination, transitionName]);
 
-	// /**
-	//  * METHODS
-	//  */
+	/**
+	 * METHODS
+	 */
 	const onSubmit = async (values: TransitionSelectFormState): Promise<void> => {
 		let transitionsState = [...(workflow?.data.transitions || [])];
 

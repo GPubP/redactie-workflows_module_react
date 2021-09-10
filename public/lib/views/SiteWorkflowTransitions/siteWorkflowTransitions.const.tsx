@@ -9,7 +9,8 @@ import { WorkflowTransitionsTableRow } from './siteWorkflowTransitions.types';
 
 export const TRANSITION_COLUMNS = (
 	t: TranslateFunc,
-	mySecurityRights: string[]
+	mySecurityRights: string[],
+	isTenant: boolean
 ): TableColumn<WorkflowTransitionsTableRow>[] => {
 	const canUpdate = rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityRights, [
 		rolesRightsConnector.securityRights.updateWorkflow,
@@ -30,11 +31,9 @@ export const TRANSITION_COLUMNS = (
 				return (
 					<div className="u-flex u-flex-column">
 						{to.map((val, index) => (
-							<Icon
-								key={index}
-								className={index !== 0 ? 'u-margin-top-xs' : ''}
-								name="angle-right"
-							/>
+							<p key={index} className={index !== 0 ? 'u-margin-top-xs' : ''}>
+								<Icon name="angle-right" />
+							</p>
 						))}
 					</div>
 				);
@@ -77,8 +76,9 @@ export const TRANSITION_COLUMNS = (
 			disableSorting: true,
 			width: '10%',
 			component(value, { uuid, navigate }) {
-				if (!canUpdate) {
-					return;
+				if (!canUpdate || isTenant) {
+					// Needed tot keep consistent spacing with buttons
+					return <div className="u-margin-top-lg" />;
 				}
 
 				return (

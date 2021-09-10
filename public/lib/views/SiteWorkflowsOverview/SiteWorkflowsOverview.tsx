@@ -23,6 +23,7 @@ import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import { FilterForm, FilterFormState } from '../../components';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
+import { isTenantWorfklow } from '../../helpers';
 import { usePaginatedWorkflows, useRoutesBreadcrumbs } from '../../hooks';
 import { DEFAULT_WORKFLOWS_SEARCH_PARAMS } from '../../services/workflows';
 import { WORKFLOW_ALERT_CONTAINER_IDS } from '../../store/workflows/workflows.const';
@@ -132,11 +133,17 @@ const SiteWorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> =
 	const renderOverview = (): ReactElement | null => {
 		const workflowRows: WorkflowsOverviewTableRow[] = (pagination?.data || []).map(
 			workflow => ({
+				isTenant: isTenantWorfklow(workflow),
 				workflowUuid: workflow.uuid as string,
-				detailPath: generatePath(MODULE_PATHS.site.workflowEdit, {
-					workflowUuid: workflow.uuid,
-					siteId,
-				}),
+				detailPath: isTenantWorfklow(workflow)
+					? generatePath(MODULE_PATHS.site.workflowTransitions, {
+							workflowUuid: workflow.uuid,
+							siteId,
+					  })
+					: generatePath(MODULE_PATHS.site.workflowEdit, {
+							workflowUuid: workflow.uuid,
+							siteId,
+					  }),
 				name: workflow.data.name,
 				description: workflow.data.description,
 				isDefault: !!workflow.meta?.default,

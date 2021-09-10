@@ -3,6 +3,7 @@ import { LoadingState, useNavigate, useSiteContext } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
+import { isTenantWorfklow } from '../../helpers';
 import { usePaginatedWorkflowStatuses } from '../../hooks';
 import { TransitionRequirementTypes, WorkflowPopulatedTransition } from '../../services/workflows';
 import { MODULE_PATHS, SITES_ROOT } from '../../workflows.const';
@@ -32,6 +33,7 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 	const [statusRows, setStatusRows] = useState<WorkflowTransitionsTableRow[]>([]);
 	const [rolesLoadingState, roles] = rolesRightsConnector.api.hooks.useSiteRoles();
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
+	const isTenant = isTenantWorfklow(workflow);
 
 	useEffect(() => {
 		if (
@@ -39,8 +41,6 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 			mySecurityRightsLoadingState === LoadingState.Loaded &&
 			rolesLoadingState === LoadingState.Loaded
 		) {
-			console.log('loaded');
-
 			setInitialLoading(LoadingState.Loaded);
 		}
 	}, [loading, mySecurityRightsLoadingState, rolesLoadingState]);
@@ -143,7 +143,7 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 				fixed
 				className="u-margin-top"
 				tableClassName="a-table--fixed--sm"
-				columns={TRANSITION_COLUMNS(t, mySecurityrights)}
+				columns={TRANSITION_COLUMNS(t, mySecurityrights, isTenant)}
 				rows={statusRows}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
 				loading={initialLoading !== LoadingState.Loaded}
