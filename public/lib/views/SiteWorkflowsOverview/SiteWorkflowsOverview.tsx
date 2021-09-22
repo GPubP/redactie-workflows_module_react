@@ -149,7 +149,7 @@ const SiteWorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> =
 				isDefault: !!workflow.meta?.default,
 				active: !!workflow.meta?.active,
 				navigate: (workflowUuid: string) =>
-					navigate(MODULE_PATHS.site.workflowEdit, { workflowUuid, siteId }),
+					navigate(MODULE_PATHS.site.workflowTransitions, { workflowUuid, siteId }),
 			})
 		);
 
