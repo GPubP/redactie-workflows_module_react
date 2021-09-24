@@ -82,7 +82,7 @@ const SiteWorkflowEdit: FC<WorkflowRouteProps> = ({ location, route, match }) =>
 	const renderChildRoutes = (): ReactElement | null => {
 		const extraOptions = {
 			workflow,
-			onCancel: () => navigate(MODULE_PATHS.site.workflowsOverview),
+			onCancel: () => navigate(MODULE_PATHS.site.workflowsOverview, { siteId }),
 			onSubmit: updateWorkflow,
 		};
 
