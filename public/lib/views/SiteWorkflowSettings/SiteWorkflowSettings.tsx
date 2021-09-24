@@ -12,6 +12,7 @@ import {
 	DeletePrompt,
 	FormikOnChangeHandler,
 	LeavePrompt,
+	LoadingState,
 	useDetectValueChanges,
 	useNavigate,
 	useOnNextRender,
@@ -22,7 +23,7 @@ import React, { FC, ReactElement, useMemo, useRef, useState } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 
 import { WorkflowSettingsForm } from '../../components';
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors';
+import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
 import { useWorkflowsUIStates } from '../../hooks';
 import { WorkflowDetailModel, workflowsFacade } from '../../store/workflows';
 import { WORKFLOW_ALERT_CONTAINER_IDS } from '../../store/workflows/workflows.const';
@@ -42,6 +43,7 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 	const { siteId } = useSiteContext();
 	const [listState, detailState] = useWorkflowsUIStates(workflow?.uuid);
 	const isUpdate = useMemo(() => !!workflow?.uuid, [workflow]);
+	const { navigate } = useNavigate(SITES_ROOT);
 
 	const formikRef = useRef<FormikProps<FormikValues>>();
 	const isLoading = useMemo(
@@ -51,12 +53,34 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 	const [formValue, setFormValue] = useState<WorkflowDetailModel | null>(workflow || null);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-	const { navigate } = useNavigate(SITES_ROOT);
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(
 		!isLoading && !!workflow && !!formValue,
 		formValue
 	);
 	const resetChangeDetectionOnNextRender = useOnNextRender(() => resetChangeDetection());
+
+	const [
+		mySecurityRightsLoading,
+		mySecurityrights,
+	] = rolesRightsConnector.api.hooks.useMySecurityRightsForSite({
+		siteUuid: siteId,
+		onlyKeys: false,
+	});
+	const [canUpsert, canDelete] = useMemo(() => {
+		const mySecurityrightKeys = mySecurityrights.map(right => right.attributes.key);
+		return [
+			mySecurityRightsLoading === LoadingState.Loaded &&
+				rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrightKeys, [
+					isUpdate
+						? rolesRightsConnector.securityRights.updateWorkflow
+						: rolesRightsConnector.securityRights.createWorkflow,
+				]),
+			mySecurityRightsLoading === LoadingState.Loaded &&
+				rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrightKeys, [
+					rolesRightsConnector.securityRights.deleteWorkflow,
+				]),
+		];
+	}, [isUpdate, mySecurityRightsLoading, mySecurityrights]);
 
 	/**
 	 * Methods
@@ -236,7 +260,9 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 									setFormValue(values as WorkflowDetailModel);
 								}}
 							/>
-							{isUpdate && <div className="u-margin-top">{renderStatusCard()}</div>}
+							{isUpdate && canDelete && (
+								<div className="u-margin-top">{renderStatusCard()}</div>
+							)}
 							<ActionBar className="o-action-bar--fixed" isOpen>
 								<ActionBarContentSection>
 									<div className="u-wrapper u-text-right">
@@ -245,17 +271,21 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 												? t(CORE_TRANSLATIONS.BUTTON_CANCEL)
 												: t(CORE_TRANSLATIONS.BUTTON_BACK)}
 										</Button>
-										<Button
-											iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
-											disabled={isLoading || !hasChanges}
-											className="u-margin-left-xs"
-											onClick={submitForm}
-											type="success"
-										>
-											{isUpdate
-												? t(CORE_TRANSLATIONS.BUTTON_SAVE)
-												: t(CORE_TRANSLATIONS['BUTTON_SAVE-NEXT'])}
-										</Button>
+										{canUpsert && (
+											<Button
+												iconLeft={
+													isLoading ? 'circle-o-notch fa-spin' : null
+												}
+												disabled={isLoading || !hasChanges}
+												className="u-margin-left-xs"
+												onClick={submitForm}
+												type="success"
+											>
+												{isUpdate
+													? t(CORE_TRANSLATIONS.BUTTON_SAVE)
+													: t(CORE_TRANSLATIONS['BUTTON_SAVE-NEXT'])}
+											</Button>
+										)}
 									</div>
 								</ActionBarContentSection>
 							</ActionBar>
