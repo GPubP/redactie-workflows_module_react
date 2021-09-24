@@ -83,3 +83,8 @@ export const DETAIL_TABS: ContextHeaderTab[] = [
 	DETAIL_TAB_MAP.settings,
 	DETAIL_TAB_MAP.transitions,
 ];
+
+export const CONFIG: Readonly<{ name: string; module: string }> = {
+	name: 'workflow',
+	module: 'workflows-module',
+};

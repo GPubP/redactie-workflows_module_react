@@ -18,7 +18,7 @@ import { isEmpty } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { TransitionSelectForm } from '../../components';
-import { TransitionSelectFormState } from '../../components/forms/TransitionSelectForm/TransitionSelectForm.types';
+import { TransitionSelectFormState } from '../../components/Forms/TransitionSelectForm/TransitionSelectForm.types';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
 import {
 	usePaginatedWorkflowStatuses,
