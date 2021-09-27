@@ -175,6 +175,8 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 			'update' as any
 		);
 
+		setInitialWorkflowStatuses(newWorkflowStatuses);
+		setNewWorkflowStatuses([]);
 		resetChangeDetection();
 	};
 
