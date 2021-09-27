@@ -171,8 +171,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 				mapping: statusMapping,
 			},
 			contentType,
-			siteId,
-			'update' as any
+			siteId
 		);
 
 		setInitialWorkflowStatuses(newWorkflowStatuses);
