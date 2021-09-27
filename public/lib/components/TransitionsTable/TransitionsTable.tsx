@@ -1,6 +1,6 @@
 import { Table } from '@acpaas-ui/react-editorial-components';
 import { useNavigate } from '@redactie/utils';
-import React, { FC, ReactElement, useEffect, useState } from 'react';
+import React, { FC, ReactElement, useMemo } from 'react';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { isTenantWorfklow } from '../../helpers';
@@ -26,9 +26,8 @@ const TransitionsTable: FC<TransitionsTableProps> = ({
 	const [t] = useCoreTranslation();
 	const isTenant = isTenantWorfklow(workflow);
 	const { navigate } = useNavigate(SITES_ROOT);
-	const [statusRows, setStatusRows] = useState<TransitionsTableRow[]>([]);
 
-	useEffect(() => {
+	const statusRows = useMemo(() => {
 		if (!statuses || !workflow || !roles) {
 			return;
 		}
@@ -89,7 +88,7 @@ const TransitionsTable: FC<TransitionsTableProps> = ({
 			{}
 		);
 
-		const mapStatuses: TransitionsTableRow[] = statuses.map(status => {
+		return statuses.map(status => {
 			if (groupedTransitions[status.uuid as string]) {
 				return groupedTransitions[status.uuid as string];
 			}
@@ -106,8 +105,6 @@ const TransitionsTable: FC<TransitionsTableProps> = ({
 					}),
 			};
 		});
-
-		setStatusRows(mapStatuses);
 	}, [statuses, workflow, roles]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (

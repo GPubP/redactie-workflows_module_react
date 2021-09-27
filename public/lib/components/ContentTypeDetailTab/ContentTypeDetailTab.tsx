@@ -17,6 +17,7 @@ import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import { TransitionsTable } from '../../components';
 import { rolesRightsConnector } from '../../connectors';
+import contentTypeConnector from '../../connectors/contentTypes/contentTypes';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { usePaginatedWorkflows, usePaginatedWorkflowStatuses, useWorkflow } from '../../hooks';
 import { WorkflowPopulatedTransition } from '../../services/workflows';
@@ -30,7 +31,6 @@ const cx = classnames.bind(styles);
 const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	value = {} as Record<string, any>,
 	isLoading,
-	onSubmit,
 	onCancel,
 }) => {
 	const initialValues: ContentTypeDetailTabFormState = {
@@ -72,6 +72,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	const [formState, setFormState] = useState<StatusSelectFormState>({ statuses: [] });
 	const [statusMapping, setStatusMapping] = useState<{ from: string; to: string }[]>([]);
 	const [formValid, setFormValid] = useState<boolean>(false);
+	const [, , , contentType] = contentTypeConnector.hooks.useContentType();
 
 	useEffect(() => {
 		rolesRightsConnector.api.store.roles.service.getSiteRoles(siteId);
@@ -158,15 +159,21 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [workflow]);
 
-	const onFormSubmit = (values: ContentTypeDetailTabFormState): void => {
-		onSubmit({
-			config: {
+	const onFormSubmit = async (values: ContentTypeDetailTabFormState): Promise<void> => {
+		if (!contentType) {
+			return;
+		}
+
+		await contentTypeConnector.contentTypesFacade.updateContentTypeSiteWorkflow(
+			{
 				from: value?.config?.workflow || '',
-				to: values.workflow,
+				to: values.workflow as string,
 				mapping: statusMapping,
 			},
-			validationSchema: {},
-		});
+			contentType,
+			siteId,
+			'update' as any
+		);
 
 		resetChangeDetection();
 	};

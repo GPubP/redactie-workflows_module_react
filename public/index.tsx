@@ -3,7 +3,8 @@ import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
 
 import { ContentTypeDetailTab } from './lib/components';
-import { registerCTDetailTab, rolesRightsConnector, sitesConnector } from './lib/connectors';
+import { rolesRightsConnector, sitesConnector } from './lib/connectors';
+import contentTypeConnector from './lib/connectors/contentTypes/contentTypes';
 import {
 	SiteWorkflowCreate,
 	SiteWorkflowEdit,
@@ -24,16 +25,16 @@ import {
 import { CONFIG, MODULE_PATHS, SITE_PARAM } from './lib/workflows.const';
 import { WorkflowModuleRouteProps } from './lib/workflows.types';
 
-registerCTDetailTab(CONFIG.name, {
+contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	label: 'Workflow',
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
-	show: ({ siteId }: { siteId: string }) => {
-		return !!siteId;
+	show: context => {
+		return !!context.siteId;
 	},
 	disabled: false,
-} as any); //TODO: fix type
+});
 
 const WorkflowsComponent: FC<WorkflowModuleRouteProps> = ({ route, tenantId }) => {
 	const guardsMeta = useMemo(() => ({ tenantId }), [tenantId]);
