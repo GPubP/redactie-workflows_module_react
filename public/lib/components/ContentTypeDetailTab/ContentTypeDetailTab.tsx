@@ -1,5 +1,12 @@
 import { Button, Select } from '@acpaas-ui/react-components';
-import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
+import {
+	ActionBar,
+	ActionBarContentSection,
+	ControlledModal,
+	ControlledModalBody,
+	ControlledModalFooter,
+	ControlledModalHeader,
+} from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
 import {
 	DataLoader,
@@ -65,7 +72,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	});
 	const [rolesLoadingState, roles] = rolesRightsConnector.api.hooks.useSiteRoles();
 	const [workflowOptions, setWorkflowOptions] = useState<SelectOption[]>([]);
-	const [workflow] = useWorkflow(formValue.workflow, siteId);
+	const [workflow, workflowUI] = useWorkflow(formValue.workflow, siteId);
 	const [initialWorkflowStatuses, setInitialWorkflowStatuses] = useState<SelectOption[]>([]);
 	const [initialWorkflowName, setInitialWorkflowName] = useState<string>();
 	const [newWorkflowStatuses, setNewWorkflowStatuses] = useState<SelectOption[]>([]);
@@ -73,6 +80,8 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	const [statusMapping, setStatusMapping] = useState<{ from: string; to: string }[]>([]);
 	const [formValid, setFormValid] = useState<boolean>(false);
 	const [, , , contentType] = contentTypeConnector.hooks.useContentType();
+	const [showConfirmModal, setShowConfirmModal] = useState(false);
+	const [newWorkflowId, setNewWorkflowId] = useState<string>();
 
 	useEffect(() => {
 		rolesRightsConnector.api.store.roles.service.getSiteRoles(siteId);
@@ -160,6 +169,11 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	}, [workflow]);
 
 	const onFormSubmit = async (values: ContentTypeDetailTabFormState): Promise<void> => {
+		setNewWorkflowId(values.workflow);
+		setShowConfirmModal(true);
+	};
+
+	const onConfirm = async (): Promise<void> => {
 		if (!contentType) {
 			return;
 		}
@@ -167,7 +181,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 		await contentTypeConnector.contentTypesFacade.updateContentTypeSiteWorkflow(
 			{
 				from: value?.config?.workflow || '',
-				to: values.workflow as string,
+				to: newWorkflowId as string,
 				mapping: statusMapping,
 			},
 			contentType,
@@ -177,6 +191,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 		setInitialWorkflowStatuses(newWorkflowStatuses);
 		setNewWorkflowStatuses([]);
 		resetChangeDetection();
+		setShowConfirmModal(false);
 	};
 
 	const onStatusSelectFormChange = (values: StatusSelectFormState, isValid: boolean): void => {
@@ -199,6 +214,10 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 
 		setFormValid(isValid);
 		setStatusMapping(mapping);
+	};
+
+	const onPromptCancel = (): void => {
+		setShowConfirmModal(false);
 	};
 
 	const renderSelect = (): ReactElement => {
@@ -248,10 +267,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 												{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
 											</Button>
 											<Button
-												iconLeft={
-													isLoading ? 'circle-o-notch fa-spin' : null
-												}
-												disabled={isLoading || !hasChanges || !formValid}
+												disabled={!hasChanges || !formValid}
 												onClick={submitForm}
 												type="success"
 												htmlType="submit"
@@ -261,6 +277,38 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 										</div>
 									</ActionBarContentSection>
 								</ActionBar>
+								<ControlledModal
+									show={showConfirmModal}
+									onClose={onPromptCancel}
+									size="large"
+								>
+									<ControlledModalHeader>
+										<h4>Bevestigen</h4>
+									</ControlledModalHeader>
+									<ControlledModalBody>
+										Je probeert de workflow voor dit content type te wijzigen.
+										Weet je het zeker? Dit kan niet ongedaan gemaakt worden.{' '}
+									</ControlledModalBody>
+									<ControlledModalFooter>
+										<div className="u-flex u-flex-item u-flex-justify-end">
+											<Button onClick={onPromptCancel} negative>
+												Annuleer
+											</Button>
+											<Button
+												iconLeft={
+													isLoading
+														? 'circle-o-notch fa-spin'
+														: 'fa-check'
+												}
+												disabled={isLoading}
+												onClick={onConfirm}
+												type={'success'}
+											>
+												Ja, oke
+											</Button>
+										</div>
+									</ControlledModalFooter>
+								</ControlledModal>
 								<LeavePrompt
 									shouldBlockNavigationOnConfirm
 									when={hasChanges}
@@ -304,6 +352,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 							mySecurityrights={mySecurityrights}
 							siteId={siteId}
 							loading={
+								workflowUI?.isFetching ||
 								workflowsLoading ||
 								statusesLoading ||
 								rolesLoadingState !== LoadingState.Loaded ||
