@@ -242,6 +242,18 @@ if (rolesRightsConnector.api) {
 					order: 0,
 					parentPath: MODULE_PATHS.site.workflowRoot,
 				},
+				canShown: [
+					rolesRightsConnector.api.canShowns.securityRightsSiteCanShown(SITE_PARAM, [
+						rolesRightsConnector.securityRights.readWorkflow,
+					]),
+				],
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsSiteGuard(SITE_PARAM, [
+							rolesRightsConnector.securityRights.readWorkflow,
+						]),
+					],
+				},
 			},
 			{
 				path: MODULE_PATHS.site.workflowCreate,
@@ -267,6 +279,13 @@ if (rolesRightsConnector.api) {
 				path: MODULE_PATHS.site.workflowTransitionDetail,
 				breadcrumb: false,
 				component: SiteWorkflowTransitionDetail,
+				guardOptions: {
+					guards: [
+						rolesRightsConnector.api.guards.securityRightsSiteGuard(SITE_PARAM, [
+							rolesRightsConnector.securityRights.updateWorkflow,
+						]),
+					],
+				},
 			},
 			{
 				path: MODULE_PATHS.site.workflowEdit,
@@ -276,7 +295,7 @@ if (rolesRightsConnector.api) {
 				guardOptions: {
 					guards: [
 						rolesRightsConnector.api.guards.securityRightsSiteGuard(SITE_PARAM, [
-							rolesRightsConnector.securityRights.updateWorkflow,
+							rolesRightsConnector.securityRights.readWorkflow,
 						]),
 					],
 				},
