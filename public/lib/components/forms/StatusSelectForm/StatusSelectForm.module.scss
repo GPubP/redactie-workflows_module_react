@@ -1,0 +1,32 @@
+@import '~@a-ui/core/dist/assets/styles/_quarks';
+
+.status-select-form {
+	display: grid;
+	grid-template-columns: 1fr minmax(auto, 250px) 1fr;
+	gap: $spacer-md 0;
+}
+
+.status-select-form__from-title {
+	grid-column: 1 / 2;
+}
+
+.status-select-form__to-title {
+	grid-column: 3 / 4;
+}
+
+.status-select-form__from-status {
+	grid-column: 1 / 2;
+	align-self: center;
+}
+
+.status-select-form__to-status {
+	grid-column: 3 / 4;
+	align-self: center;
+}
+
+.status-select-form__arrow {
+	grid-column: 2 / 3;
+	align-self: center;
+	justify-self: center;
+	color: $grey;
+}

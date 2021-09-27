@@ -17,8 +17,8 @@ import { omit } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import WorkflowStatusForm from '../../components/forms/WorkflowStatusForm/WorkflowStatusForm';
-import { WorkflowStatusFormState } from '../../components/forms/WorkflowStatusForm/workflowStatusForm.types';
+import WorkflowStatusForm from '../../components/Forms/WorkflowStatusForm/WorkflowStatusForm';
+import { WorkflowStatusFormState } from '../../components/Forms/WorkflowStatusForm/workflowStatusForm.types';
 import { rolesRightsConnector } from '../../connectors';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useRoutesBreadcrumbs } from '../../hooks';
