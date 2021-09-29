@@ -2,6 +2,7 @@ import Core from '@redactie/redactie-core';
 import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
 
+import { registerWorkflowsAPI } from './lib/api';
 import { ContentTypeDetailTab } from './lib/components';
 import { rolesRightsConnector, sitesConnector } from './lib/connectors';
 import contentTypeConnector from './lib/connectors/contentTypes/contentTypes';
@@ -319,5 +320,8 @@ if (rolesRightsConnector.api) {
 		`Workflows Module can't resolve the following dependency: ${rolesRightsConnector.apiName}, please add the module to the dependency list.`
 	);
 }
+
+// API export
+registerWorkflowsAPI();
 
 export * from './lib/api/api.types';
