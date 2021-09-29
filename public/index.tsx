@@ -319,3 +319,5 @@ if (rolesRightsConnector.api) {
 		`Workflows Module can't resolve the following dependency: ${rolesRightsConnector.apiName}, please add the module to the dependency list.`
 	);
 }
+
+export * from './lib/api/api.types';
