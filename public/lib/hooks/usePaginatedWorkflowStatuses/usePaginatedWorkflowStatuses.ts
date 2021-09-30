@@ -15,7 +15,8 @@ const searchParamsObservable = subject.asObservable();
 
 const usePaginatedWorkflowStatuses: UsePaginatedWorkflowStatuses = (
 	searchParams,
-	clearCache = false
+	clearCache = false,
+	sparse = true
 ) => {
 	const [pagination, setPagination] = useState<PaginationResponse<
 		WorkflowStatusesListModel
@@ -37,7 +38,10 @@ const usePaginatedWorkflowStatuses: UsePaginatedWorkflowStatuses = (
 				tap(() => workflowStatusesFacade.setIsFetching(true)),
 				switchMap(([, searchParams]) =>
 					paginator.getPage(() =>
-						workflowStatusesFacade.getWorkflowStatusesPaginated(searchParams)
+						workflowStatusesFacade.getWorkflowStatusesPaginated({
+							...searchParams,
+							sparse,
+						})
 					)
 				)
 			)
