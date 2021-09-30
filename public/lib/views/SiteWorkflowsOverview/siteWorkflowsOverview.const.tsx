@@ -35,13 +35,11 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<WorkflowsOvervie
 			classList: [cx('a-table__cell--align-top')],
 			value: 'name',
 			width: '20%',
-			component(value: any, { description, isDefault, detailPath }) {
+			component(value: any, { description, detailPath }) {
 				return (
 					<>
 						<AUILink to={detailPath} component={Link}>
-							<EllipsisWithTooltip>
-								{value} {!isDefault ? '(standaard)' : ''}
-							</EllipsisWithTooltip>
+							<EllipsisWithTooltip>{value}</EllipsisWithTooltip>
 						</AUILink>
 						<p className="small">
 							{description ? (
