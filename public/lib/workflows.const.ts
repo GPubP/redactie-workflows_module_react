@@ -85,6 +85,6 @@ export const DETAIL_TABS: ContextHeaderTab[] = [
 ];
 
 export const CONFIG: Readonly<{ name: string; module: string }> = {
-	name: 'workflow',
+	name: 'workflows',
 	module: 'workflows-module',
 };
