@@ -15,7 +15,7 @@ const searchParamsObservable = subject.asObservable();
 
 const usePaginatedWorkflows: UsePaginatedWorkflows = (
 	searchParams,
-	options?: { clearCache?: boolean; siteId?: string }
+	options?: { clearCache?: boolean; siteId?: string; sparse?: boolean }
 ) => {
 	const [pagination, setPagination] = useState<PaginationResponse<WorkflowsListModel> | null>(
 		null
@@ -38,11 +38,14 @@ const usePaginatedWorkflows: UsePaginatedWorkflows = (
 				switchMap(([, searchParams]) =>
 					paginator.getPage(() =>
 						options?.siteId
-							? workflowsFacade.getSiteWorkflowsPaginated(
-									options?.siteId,
-									searchParams
-							  )
-							: workflowsFacade.getWorkflowsPaginated(searchParams)
+							? workflowsFacade.getSiteWorkflowsPaginated(options?.siteId, {
+									...searchParams,
+									sparse: options?.sparse,
+							  })
+							: workflowsFacade.getWorkflowsPaginated({
+									...searchParams,
+									sparse: options?.sparse,
+							  })
 					)
 				)
 			)

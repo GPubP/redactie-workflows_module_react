@@ -1,8 +1,9 @@
 import { ModuleRouteConfig, RouteConfigComponentProps } from '@redactie/redactie-core';
 import { AlertProps } from '@redactie/utils';
 
+import { UseWorkflow } from './hooks/useWorkflow/useWorkflow.types';
 import { CreateWorkflowPayload } from './services/workflows';
-import { WorkflowDetailModel } from './store/workflows';
+import { WorkflowDetailModel, WorkflowsFacade } from './store/workflows';
 
 export interface WorkflowModuleRouteProps<Params extends { [K in keyof Params]?: string } = {}>
 	extends RouteConfigComponentProps<Params> {
@@ -45,4 +46,15 @@ export interface WorkflowDetailRouteProps<Params = WorkflowRouteParams>
 	readonly workflow: WorkflowDetailModel;
 	onCancel: () => void;
 	onSubmit: (data: CreateWorkflowPayload | WorkflowDetailModel) => Promise<void>;
+}
+
+export interface WorkflowsModuleAPI {
+	store: {
+		workflows: {
+			facade: Pick<WorkflowsFacade, 'getWorkflow'>;
+		};
+	};
+	hooks: {
+		useWorkflow: UseWorkflow;
+	};
 }
