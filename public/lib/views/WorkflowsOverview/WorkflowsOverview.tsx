@@ -46,7 +46,7 @@ const WorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () 
 		mySecurityRightsLoadingState,
 		mySecurityrights,
 	] = rolesRightsConnector.api.hooks.useMySecurityRightsForTenant(true);
-	const { loading, pagination } = usePaginatedWorkflows(query as SearchParams);
+	const { loading, pagination } = usePaginatedWorkflows(query as SearchParams, { sparse: true });
 
 	useEffect(() => {
 		if (mySecurityRightsLoadingState !== LoadingState.Loading) {
