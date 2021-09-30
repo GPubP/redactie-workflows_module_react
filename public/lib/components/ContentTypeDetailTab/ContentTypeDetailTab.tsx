@@ -41,7 +41,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	onCancel,
 }) => {
 	const initialValues: ContentTypeDetailTabFormState = {
-		workflow: value?.config?.workflow || null,
+		workflow: value?.config?.defaultWorkflow || value?.config?.workflow || null,
 	};
 	const [t] = useCoreTranslation();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
@@ -180,7 +180,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 
 		await contentTypeConnector.contentTypesFacade.updateContentTypeSiteWorkflow(
 			{
-				from: value?.config?.workflow || '',
+				from: value?.config?.defaultWorkflow || value?.config?.workflow || '',
 				to: newWorkflowId as string,
 				mapping: statusMapping,
 			},
