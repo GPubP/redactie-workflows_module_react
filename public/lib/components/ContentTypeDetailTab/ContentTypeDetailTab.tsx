@@ -51,6 +51,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 		{
 			page: 1,
 			pagesize: -1,
+			active: true,
 		},
 		{
 			siteId,
