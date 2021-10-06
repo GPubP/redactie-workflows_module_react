@@ -267,7 +267,18 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 												{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
 											</Button>
 											<Button
-												disabled={!hasChanges || !formValid}
+												disabled={
+													!hasChanges &&
+													(!formValid ||
+														!(
+															!isEmpty(initialWorkflowStatuses) &&
+															!isEmpty(newWorkflowStatuses) &&
+															equals(
+																initialWorkflowStatuses,
+																newWorkflowStatuses
+															)
+														))
+												}
 												onClick={submitForm}
 												type="success"
 												htmlType="submit"

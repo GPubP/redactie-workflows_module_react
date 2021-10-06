@@ -26,9 +26,14 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 		pagesize: -1,
 	});
 	const [statusRows, setStatusRows] = useState<WorkflowTransitionsTableRow[]>([]);
+	const [rolesLoadingState, roles] = rolesRightsConnector.api.hooks.useSiteRoles();
 
 	useEffect(() => {
-		if (!pagination?.data || !workflow) {
+		rolesRightsConnector.api.store.roles.service.getDefaultSiteRoles();
+	}, []);
+
+	useEffect(() => {
+		if (!pagination?.data || !workflow || !roles) {
 			return;
 		}
 
@@ -40,6 +45,14 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 				},
 				transition: WorkflowPopulatedTransition
 			) => {
+				const requirement = transition.requirements.find(
+					requirement => requirement.type === TransitionRequirementTypes.userHasRole
+				);
+
+				const transitionRoles = requirement
+					? (requirement.value as string[])
+					: roles?.map(role => role.name);
+
 				if (!acc[transition.from.uuid]) {
 					acc[transition.from.uuid] = {
 						uuid: transition.from.uuid,
@@ -47,12 +60,7 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 						to: [
 							{
 								name: transition.to.data.name,
-								roles:
-									(transition.requirements.find(
-										requirement =>
-											requirement.type ===
-											TransitionRequirementTypes.userHasRole
-									)?.value as string[]) || [],
+								roles: transitionRoles,
 							},
 						],
 						navigate: (uuid: string) =>
@@ -69,11 +77,7 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 					...acc[transition.from.uuid].to,
 					{
 						name: transition.to.data.name,
-						roles:
-							(transition.requirements.find(
-								requirement =>
-									requirement.type === TransitionRequirementTypes.userHasRole
-							)?.value as string[]) || [],
+						roles: transitionRoles,
 					},
 				];
 
@@ -100,7 +104,7 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 		});
 
 		setStatusRows(mapStatuses);
-	}, [pagination, workflow]); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [pagination, workflow, roles]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	/**
 	 * Methods
@@ -119,7 +123,11 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 				columns={TRANSITION_COLUMNS(t, mySecurityrights)}
 				rows={statusRows}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
-				loading={loading && mySecurityRightsLoadingState === LoadingState.Loaded}
+				loading={
+					loading &&
+					mySecurityRightsLoadingState === LoadingState.Loaded &&
+					rolesLoadingState === LoadingState.Loaded
+				}
 			/>
 		);
 	};
