@@ -24,6 +24,10 @@ export const DEFAULT_OVERVIEW_QUERY_PARAMS = {
 		defaultValue: 'data.name',
 		type: 'string',
 	},
+	'tenant-active': {
+		defaultValue: true,
+		type: 'number',
+	},
 } as const;
 
 const cx = classnames.bind(styles);
