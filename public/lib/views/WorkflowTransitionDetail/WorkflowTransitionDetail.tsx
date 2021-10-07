@@ -181,23 +181,31 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 		let transitionsState = [...(workflow?.data.transitions || [])];
 
 		for (const transition of Object.values(values)) {
-			if (isEmpty(transition.roles)) {
+			if (isEmpty(transition.roles) || !transition.roles) {
 				continue;
 			}
 
 			if (isNumber(transition.index)) {
-				const requirements = transitionsState[transition.index].requirements.map(
-					requirement => {
-						if (requirement.type === TransitionRequirementTypes.userHasRole) {
-							return {
-								value: transition.roles,
-								type: TransitionRequirementTypes.userHasRole,
-							};
-						}
+				let requirements = transitionsState[transition.index].requirements;
 
-						return requirement;
-					}
+				const rolesRequirementIndex = requirements.findIndex(
+					requirement => requirement.type === TransitionRequirementTypes.userHasRole
 				);
+
+				if (rolesRequirementIndex > -1) {
+					requirements[rolesRequirementIndex] = {
+						value: transition.roles,
+						type: TransitionRequirementTypes.userHasRole,
+					};
+				} else {
+					requirements = [
+						...requirements,
+						{
+							value: transition.roles,
+							type: TransitionRequirementTypes.userHasRole,
+						},
+					];
+				}
 
 				transitionsState[transition.index] = {
 					from: (transitionsState[transition.index] as WorkflowPopulatedTransition).from
