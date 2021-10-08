@@ -151,8 +151,8 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 						<CardBody>
 							<CardTitle>Er ging iets mis</CardTitle>
 							<CardDescription>
-								Er ging iets mis bij het ophalen van content types waarin deze
-								workflow gebruikt wordt.
+								Er ging iets mis bij het ophalen van sites waarin deze workflow
+								gebruikt wordt.
 							</CardDescription>
 						</CardBody>
 					</Card>
