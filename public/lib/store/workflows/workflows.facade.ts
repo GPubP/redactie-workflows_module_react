@@ -540,9 +540,10 @@ export class WorkflowsFacade {
 				};
 			})
 			.catch(error => {
+				// TODO: pass error instead of null
 				return {
 					data: [],
-					error,
+					error: null,
 				};
 			});
 	}
@@ -561,9 +562,10 @@ export class WorkflowsFacade {
 				};
 			})
 			.catch(error => {
+				// TODO: pass error instead of null
 				return {
 					data: [],
-					error,
+					error: null,
 				};
 			});
 	}
