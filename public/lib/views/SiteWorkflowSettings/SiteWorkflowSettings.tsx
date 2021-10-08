@@ -9,6 +9,7 @@ import {
 import { ActionBar, ActionBarContentSection, Status } from '@acpaas-ui/react-editorial-components';
 import {
 	alertService,
+	DataLoader,
 	DeletePrompt,
 	FormikOnChangeHandler,
 	LeavePrompt,
@@ -19,8 +20,8 @@ import {
 	useSiteContext,
 } from '@redactie/utils';
 import { FormikProps, FormikValues } from 'formik';
-import React, { FC, ReactElement, useMemo, useRef, useState } from 'react';
-import { generatePath, Link } from 'react-router-dom';
+import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { WorkflowSettingsForm } from '../../components';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
@@ -52,12 +53,35 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 	);
 	const [formValue, setFormValue] = useState<WorkflowDetailModel | null>(workflow || null);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [error, setError] = useState();
 
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(
 		!isLoading && !!workflow && !!formValue,
 		formValue
 	);
 	const resetChangeDetectionOnNextRender = useOnNextRender(() => resetChangeDetection());
+	const [occurrences, setOccurrences] = useState([]);
+	const [occurrencesLoading, setOccurrencesLoading] = useState(true);
+	const { generatePath } = useNavigate(SITES_ROOT);
+
+	const getOccurrences = async (): Promise<void> => {
+		setOccurrencesLoading(true);
+
+		const { data, error } = await workflowsFacade.siteWorkflowOccurrences(
+			siteId,
+			workflow.uuid
+		);
+
+		setOccurrences(data);
+		setError(error);
+
+		setOccurrencesLoading(false);
+	};
+
+	useEffect(() => {
+		getOccurrences();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [siteId, workflow.uuid]);
 
 	const [
 		mySecurityRightsLoading,
@@ -125,16 +149,18 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 		setShowDeleteModal(false);
 	};
 
-	const onActiveToggle = (): void => {
+	const onActiveToggle = async (): Promise<void> => {
 		workflow?.meta?.active
-			? workflowsFacade.deactivateWorkflow({
+			? await workflowsFacade.deactivateWorkflow({
 					uuid: workflow.uuid,
 					name: workflow?.data?.name,
 			  })
-			: workflowsFacade.activateWorkflow({
+			: await workflowsFacade.activateWorkflow({
 					uuid: workflow?.uuid,
 					name: workflow?.data?.name,
 			  });
+
+		resetChangeDetectionOnNextRender();
 	};
 
 	const getLoadingStateBtnProps = (
@@ -149,21 +175,35 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 	};
 
 	const renderStatusCard = (): ReactElement => {
-		const occurrences = workflow.meta?.occurrences || [];
-		const occurrencesCount = occurrences.length;
+		if (error) {
+			return (
+				<div className="u-margin-top">
+					<Card>
+						<CardBody>
+							<CardTitle>Er ging iets mis</CardTitle>
+							<CardDescription>
+								Er ging iets mis bij het ophalen van sites waarin deze workflow
+								gebruikt wordt.
+							</CardDescription>
+						</CardBody>
+					</Card>
+				</div>
+			);
+		}
+
 		const isActive = !!workflow.meta?.active;
-		const pluralSingularText = occurrencesCount === 1 ? 'site' : 'sites';
+		const pluralSingularText = occurrences.length === 1 ? 'content type' : 'content types';
 		const text = (
 			<>
-				Deze workflow wordt gebruikt in{' '}
+				Deze workflow wordt gebruikt op{' '}
 				<strong>
-					{occurrencesCount} {pluralSingularText}
+					{occurrences.length} {pluralSingularText}
 				</strong>
 			</>
 		);
 
 		const statusText = workflow.meta?.active ? (
-			occurrencesCount > 0 ? (
+			occurrences.length > 0 ? (
 				<p> {text} en kan daarom niet gedeactiveerd worden.</p>
 			) : (
 				<p>
@@ -172,72 +212,78 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 				</p>
 			)
 		) : (
-			<p>{text}. Activeer de workflow om hem beschikbaar te maken binnen sites.</p>
+			<p>{text}. Activeer de workflow om hem beschikbaar te maken binnen content types.</p>
 		);
 
 		return (
-			<Card>
-				<CardBody>
-					<CardTitle>
-						Status:{' '}
-						{workflow?.meta?.active ? (
-							<Status label={t(CORE_TRANSLATIONS.STATUS_ACTIVE)} type="ACTIVE" />
-						) : (
-							<Status
-								label={t(CORE_TRANSLATIONS['STATUS_NON-ACTIVE'])}
-								type="INACTIVE"
-							/>
+			<div className="u-margin-top">
+				<Card>
+					<CardBody>
+						<CardTitle>
+							Status:{' '}
+							{workflow?.meta?.active ? (
+								<Status label={t(CORE_TRANSLATIONS.STATUS_ACTIVE)} type="ACTIVE" />
+							) : (
+								<Status
+									label={t(CORE_TRANSLATIONS['STATUS_NON-ACTIVE'])}
+									type="INACTIVE"
+								/>
+							)}
+						</CardTitle>
+						<CardDescription>{statusText}</CardDescription>
+						{occurrences.length > 0 && (
+							<ul>
+								{occurrences.map((occurrence: any, index: number) => (
+									<li key={`${index}_${occurrence.uuid}`}>
+										<AUILink
+											to={generatePath(
+												`${MODULE_PATHS.site.contentTypeWorkflow}/`,
+												{
+													siteId,
+													contentTypeId: occurrence.uuid,
+												}
+											)}
+											component={Link}
+										>
+											{occurrence.meta.label}
+										</AUILink>
+									</li>
+								))}
+							</ul>
 						)}
-					</CardTitle>
-					<CardDescription>{statusText}</CardDescription>
-					{occurrencesCount > 0 && (
-						<ul>
-							{occurrences.map((occurrence, index) => (
-								<li key={`${index}_${occurrence.uuid}`}>
-									<AUILink
-										to={generatePath(`${MODULE_PATHS.site.dashboard}/`, {
-											siteId: occurrence.uuid,
-										})}
-										component={Link}
-									>
-										{occurrence.name}
-									</AUILink>
-								</li>
-							))}
-						</ul>
-					)}
-					{isActive && occurrencesCount === 0 && (
-						<Button
-							{...getLoadingStateBtnProps(!!detailState?.isUpdating)}
-							onClick={onActiveToggle}
-							className="u-margin-top u-margin-right"
-							type="primary"
-						>
-							{t('BUTTON_DEACTIVATE')}
-						</Button>
-					)}
-					{!isActive && (
-						<Button
-							{...getLoadingStateBtnProps(!!detailState?.isUpdating)}
-							onClick={onActiveToggle}
-							className="u-margin-top u-margin-right"
-							type="primary"
-						>
-							{t('BUTTON_ACTIVATE')}
-						</Button>
-					)}
-					{occurrencesCount === 0 && (
-						<Button
-							onClick={() => setShowDeleteModal(true)}
-							className="u-margin-top"
-							type="danger"
-							iconLeft="trash-o"
-						>
-							{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
-						</Button>
-					)}
-				</CardBody>
-			</Card>
+						{isActive && occurrences.length === 0 && (
+							<Button
+								{...getLoadingStateBtnProps(!!detailState?.isUpdating)}
+								onClick={onActiveToggle}
+								className="u-margin-top u-margin-right"
+								type="primary"
+							>
+								{t('BUTTON_DEACTIVATE')}
+							</Button>
+						)}
+						{!isActive && (
+							<Button
+								{...getLoadingStateBtnProps(!!detailState?.isUpdating)}
+								onClick={onActiveToggle}
+								className="u-margin-top u-margin-right"
+								type="primary"
+							>
+								{t('BUTTON_ACTIVATE')}
+							</Button>
+						)}
+						{occurrences.length === 0 && (
+							<Button
+								onClick={() => setShowDeleteModal(true)}
+								className="u-margin-top"
+								type="danger"
+								iconLeft="trash-o"
+							>
+								{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
+							</Button>
+						)}
+					</CardBody>
+				</Card>
+			</div>
 		);
 	};
 
@@ -261,7 +307,10 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 								}}
 							/>
 							{isUpdate && canDelete && (
-								<div className="u-margin-top">{renderStatusCard()}</div>
+								<DataLoader
+									loadingState={occurrencesLoading}
+									render={renderStatusCard}
+								/>
 							)}
 							<ActionBar className="o-action-bar--fixed" isOpen>
 								<ActionBarContentSection>

@@ -43,6 +43,7 @@ export const MODULE_PATHS = {
 		workflowSettings: `${SITE_ROOT}${WORKFLOW_DETAIL_BASE_PATH}/bewerken/instellingen`,
 		workflowTransitions: `${SITE_ROOT}${WORKFLOW_DETAIL_BASE_PATH}/bewerken/transities`,
 		workflowTransitionDetail: `${SITE_ROOT}${WORKFLOW_DETAIL_BASE_PATH}/bewerken/transities/:workflowStatusUuid`,
+		contentTypeWorkflow: `${SITE_ROOT}/content-types/:contentTypeId/workflow`,
 	},
 };
 

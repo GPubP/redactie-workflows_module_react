@@ -56,10 +56,6 @@ export interface WorkflowMeta {
 	lastEditor?: string;
 	tenant?: string;
 	active?: boolean;
-	occurrences?: {
-		uuid: string;
-		name: string;
-	}[];
 }
 
 export interface Workflow {

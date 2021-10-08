@@ -529,6 +529,44 @@ export class WorkflowsFacade {
 				});
 			});
 	}
+
+	public async workflowOccurrences(workflowUuid: string): Promise<any> {
+		return this.service
+			.workflowOccurrences(workflowUuid)
+			.then(occurrences => {
+				return {
+					data: occurrences.data,
+					error: null,
+				};
+			})
+			.catch(error => {
+				return {
+					data: [],
+					error,
+				};
+			});
+	}
+
+	// TODO: EXPORT DATA TYPE FROM CONTENT TYPES MODULE
+	public async siteWorkflowOccurrences(
+		siteId: string,
+		workflowUuid: string
+	): Promise<{ data: any; error: any }> {
+		return this.service
+			.siteWorkflowOccurrences(siteId, workflowUuid)
+			.then(occurrences => {
+				return {
+					data: occurrences.data,
+					error: null,
+				};
+			})
+			.catch(error => {
+				return {
+					data: [],
+					error,
+				};
+			});
+	}
 }
 
 export const workflowsFacade = new WorkflowsFacade(
