@@ -154,6 +154,11 @@ export const SiteWorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({
 
 		const mapStatuses = (pagination?.data || []).reduce(
 			(acc: TransitionSelectFormState, status: WorkflowStatus) => {
+				// Don't allow "Nieuw" status as transition
+				if (status.data.name === 'Nieuw') {
+					return acc;
+				}
+
 				if (filteredTransitions[status.uuid as string]) {
 					return {
 						...acc,
@@ -188,9 +193,14 @@ export const SiteWorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({
 	//  */
 	const onSubmit = async (values: TransitionSelectFormState): Promise<void> => {
 		let transitionsState = [...(workflow?.data.transitions || [])];
+		let indexesToRemove: number[] = [];
 
 		for (const transition of Object.values(values)) {
 			if (isEmpty(transition.roles)) {
+				indexesToRemove = [
+					...indexesToRemove,
+					...(transition?.index ? [transition?.index] : []),
+				];
 				continue;
 			}
 
@@ -231,6 +241,10 @@ export const SiteWorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({
 				},
 			];
 		}
+
+		transitionsState = transitionsState.filter((value, index) => {
+			return indexesToRemove.indexOf(index) == -1;
+		});
 
 		await workflowsFacade
 			.updateSiteWorkflow(siteId, {

@@ -9,6 +9,7 @@ import {
 import { ActionBar, ActionBarContentSection, Status } from '@acpaas-ui/react-editorial-components';
 import {
 	alertService,
+	DataLoader,
 	DeletePrompt,
 	FormikOnChangeHandler,
 	LeavePrompt,
@@ -17,7 +18,7 @@ import {
 	useOnNextRender,
 } from '@redactie/utils';
 import { FormikProps, FormikValues } from 'formik';
-import React, { FC, ReactElement, useMemo, useRef, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 
 import { WorkflowSettingsForm } from '../../components';
@@ -55,6 +56,24 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 		formValue
 	);
 	const resetChangeDetectionOnNextRender = useOnNextRender(() => resetChangeDetection());
+	const [occurrencesLoading, setOccurrencesLoading] = useState(true);
+	const [occurrences, setOccurrences] = useState([]);
+	const [error, setError] = useState();
+
+	const getOccurrences = async (): Promise<void> => {
+		setOccurrencesLoading(true);
+		const { data, error } = await workflowsFacade.workflowOccurrences(workflow.uuid);
+
+		setOccurrences(data);
+		setError(error);
+
+		setOccurrencesLoading(false);
+	};
+
+	useEffect(() => {
+		getOccurrences();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [workflow.uuid]);
 
 	/**
 	 * Methods
@@ -99,16 +118,18 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 		setShowDeleteModal(false);
 	};
 
-	const onActiveToggle = (): void => {
+	const onActiveToggle = async (): Promise<void> => {
 		workflow?.meta?.active
-			? workflowsFacade.deactivateWorkflow({
+			? await workflowsFacade.deactivateWorkflow({
 					uuid: workflow.uuid,
 					name: workflow?.data?.name,
 			  })
-			: workflowsFacade.activateWorkflow({
+			: await workflowsFacade.activateWorkflow({
 					uuid: workflow?.uuid,
 					name: workflow?.data?.name,
 			  });
+
+		resetChangeDetectionOnNextRender();
 	};
 
 	const getLoadingStateBtnProps = (
@@ -123,21 +144,35 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 	};
 
 	const renderStatusCard = (): ReactElement => {
-		const occurrences = workflow.meta?.occurrences || [];
-		const occurrencesCount = occurrences.length;
+		if (error) {
+			return (
+				<div className="u-margin-top">
+					<Card>
+						<CardBody>
+							<CardTitle>Er ging iets mis</CardTitle>
+							<CardDescription>
+								Er ging iets mis bij het ophalen van content types waarin deze
+								workflow gebruikt wordt.
+							</CardDescription>
+						</CardBody>
+					</Card>
+				</div>
+			);
+		}
+
 		const isActive = !!workflow.meta?.active;
-		const pluralSingularText = occurrencesCount === 1 ? 'site' : 'sites';
+		const pluralSingularText = occurrences.length === 1 ? 'site' : 'sites';
 		const text = (
 			<>
 				Deze workflow wordt gebruikt in{' '}
 				<strong>
-					{occurrencesCount} {pluralSingularText}
+					{occurrences.length} {pluralSingularText}
 				</strong>
 			</>
 		);
 
 		const statusText = workflow.meta?.active ? (
-			occurrencesCount > 0 ? (
+			occurrences.length > 0 ? (
 				<p> {text} en kan daarom niet gedeactiveerd worden.</p>
 			) : (
 				<p>
@@ -164,9 +199,9 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 						)}
 					</CardTitle>
 					<CardDescription>{statusText}</CardDescription>
-					{occurrencesCount > 0 && (
+					{occurrences.length > 0 && (
 						<ul>
-							{occurrences.map((occurrence, index) => (
+							{occurrences.map((occurrence: any, index: number) => (
 								<li key={`${index}_${occurrence.uuid}`}>
 									<AUILink
 										to={generatePath(`${MODULE_PATHS.site.dashboard}/`, {
@@ -180,7 +215,7 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 							))}
 						</ul>
 					)}
-					{isActive && occurrencesCount === 0 && (
+					{isActive && occurrences.length === 0 && (
 						<Button
 							{...getLoadingStateBtnProps(!!detailState?.isUpdating)}
 							onClick={onActiveToggle}
@@ -200,7 +235,7 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 							{t('BUTTON_ACTIVATE')}
 						</Button>
 					)}
-					{occurrencesCount === 0 && (
+					{occurrences.length === 0 && (
 						<Button
 							onClick={() => setShowDeleteModal(true)}
 							className="u-margin-top"
@@ -234,7 +269,12 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 									setFormValue(values as WorkflowDetailModel);
 								}}
 							/>
-							{isUpdate && <div className="u-margin-top">{renderStatusCard()}</div>}
+							{isUpdate && (
+								<DataLoader
+									loadingState={occurrencesLoading}
+									render={renderStatusCard}
+								/>
+							)}
 							<ActionBar className="o-action-bar--fixed" isOpen>
 								<ActionBarContentSection>
 									<div className="u-wrapper u-text-right">
