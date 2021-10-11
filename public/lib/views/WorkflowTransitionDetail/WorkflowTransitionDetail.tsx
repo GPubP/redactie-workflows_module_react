@@ -3,7 +3,6 @@ import {
 	ContextHeader,
 	ContextHeaderTopSection,
 } from '@acpaas-ui/react-editorial-components';
-import { isNumber } from '@datorama/akita';
 import {
 	AlertContainer,
 	DataLoader,
@@ -20,14 +19,18 @@ import { TransitionSelectForm } from '../../components';
 import { TransitionSelectFormState } from '../../components/Forms/TransitionSelectForm/TransitionSelectForm.types';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
 import {
+	filterTransitions,
+	getTransitionsState,
+	mapStatuses,
+	sortAlphabetically,
+} from '../../helpers';
+import {
 	usePaginatedWorkflowStatuses,
 	useRoutesBreadcrumbs,
 	useWorkflow,
 	useWorkflowsUIStates,
 } from '../../hooks';
-import { WorkflowStatus } from '../../services/workflowStatuses';
 import {
-	TransitionRequirementTypes,
 	WorkflowData,
 	WorkflowDetailResponse,
 	WorkflowPopulatedTransition,
@@ -105,7 +108,7 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 			};
 		});
 
-		setRolesOptions(options);
+		setRolesOptions(sortAlphabetically(options, ['value']));
 	}, [roles]);
 
 	useEffect(() => {
@@ -113,130 +116,31 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 			return;
 		}
 
-		const filteredTransitions = (workflow.data
-			.transitions as WorkflowPopulatedTransition[]).reduce(
-			(
-				acc: TransitionSelectFormState,
-				transition: WorkflowPopulatedTransition,
-				index: number
-			) => {
-				if (transition.from.uuid === workflowStatusUuid) {
-					acc[transition.to.uuid] = {
-						index,
-						name: `${transition.to.uuid}.roles`,
-						from: {
-							uuid: transition.from.uuid,
-							name: transition.from.data.name,
-						},
-						to: {
-							uuid: transition.to.uuid,
-							name: transition.to.data.name,
-						},
-						roles: transition.requirements.find(
-							requirement =>
-								requirement.type === TransitionRequirementTypes.userHasRole
-						)?.value as string[],
-					};
-				}
-				return acc;
-			},
-			{}
+		const filteredTransitions = filterTransitions(
+			workflow.data.transitions as WorkflowPopulatedTransition[],
+			workflowStatusUuid
 		);
 
-		const mapStatuses = (pagination?.data || []).reduce(
-			(acc: TransitionSelectFormState, status: WorkflowStatus) => {
-				if (filteredTransitions[status.uuid as string]) {
-					return {
-						...acc,
-						[status.uuid as string]: filteredTransitions[status.uuid as string],
-					};
-				}
-
-				return {
-					...acc,
-					[status.uuid as string]: {
-						name: `${status.uuid}.roles`,
-						from: {
-							uuid: workflowStatusUuid,
-							name: transitionName as string,
-						},
-						to: {
-							uuid: status.uuid as string,
-							name: status.data.name,
-						},
-						roles: [],
-					},
-				};
-			},
-			{}
+		const statuses = mapStatuses(
+			pagination?.data || [],
+			filteredTransitions,
+			workflowStatusUuid,
+			transitionName as string
 		);
 
-		setFormValue(mapStatuses);
-	}, [workflowStatusUuid, workflow, pagination, transitionName]);
+		setFormValue(statuses);
+	}, [workflowStatusUuid, workflow, pagination, transitionName, workflowUuid]);
 
 	/**
 	 * METHODS
 	 */
 	const onSubmit = async (values: TransitionSelectFormState): Promise<void> => {
-		let transitionsState = [...(workflow?.data.transitions || [])];
-
-		for (const transition of Object.values(values)) {
-			if (isEmpty(transition.roles) || !transition.roles) {
-				continue;
-			}
-
-			if (isNumber(transition.index)) {
-				let requirements = transitionsState[transition.index].requirements;
-
-				const rolesRequirementIndex = requirements.findIndex(
-					requirement => requirement.type === TransitionRequirementTypes.userHasRole
-				);
-
-				if (rolesRequirementIndex > -1) {
-					requirements[rolesRequirementIndex] = {
-						value: transition.roles,
-						type: TransitionRequirementTypes.userHasRole,
-					};
-				} else {
-					requirements = [
-						...requirements,
-						{
-							value: transition.roles,
-							type: TransitionRequirementTypes.userHasRole,
-						},
-					];
-				}
-
-				transitionsState[transition.index] = {
-					from: (transitionsState[transition.index] as WorkflowPopulatedTransition).from
-						.uuid,
-					to: (transitionsState[transition.index] as WorkflowPopulatedTransition).to.uuid,
-					requirements,
-				};
-				continue;
-			}
-
-			transitionsState = [
-				...transitionsState,
-				{
-					from: transition.from.uuid,
-					to: transition.to.uuid,
-					requirements: [
-						{
-							type: TransitionRequirementTypes.userHasRole,
-							value: transition.roles,
-						},
-					],
-				},
-			];
-		}
-
 		await workflowsFacade
 			.updateWorkflow({
 				...(workflow as WorkflowDetailResponse),
 				data: {
 					...(workflow?.data as WorkflowData),
-					transitions: transitionsState,
+					transitions: getTransitionsState(values, workflow?.data.transitions || []),
 				},
 			})
 			.then(response => {
