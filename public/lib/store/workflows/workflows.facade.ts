@@ -1,4 +1,5 @@
 import { PaginationResponse, PaginatorPlugin } from '@datorama/akita';
+import { SiteDetailModel } from '@redactie/sites-module';
 import { SearchParams } from '@redactie/utils';
 import { from, Observable } from 'rxjs';
 
@@ -530,20 +531,21 @@ export class WorkflowsFacade {
 			});
 	}
 
-	public async workflowOccurrences(workflowUuid: string): Promise<any> {
+	public async workflowOccurrences(
+		workflowUuid: string
+	): Promise<{ data: SiteDetailModel[]; error: any }> {
 		return this.service
 			.workflowOccurrences(workflowUuid)
 			.then(occurrences => {
 				return {
-					data: occurrences.data,
+					data: occurrences._embedded.sites,
 					error: null,
 				};
 			})
 			.catch(error => {
-				// TODO: pass error instead of null
 				return {
 					data: [],
-					error: null,
+					error,
 				};
 			});
 	}
@@ -562,10 +564,9 @@ export class WorkflowsFacade {
 				};
 			})
 			.catch(error => {
-				// TODO: pass error instead of null
 				return {
 					data: [],
-					error: null,
+					error,
 				};
 			});
 	}

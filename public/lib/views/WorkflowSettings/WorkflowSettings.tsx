@@ -19,14 +19,14 @@ import {
 } from '@redactie/utils';
 import { FormikProps, FormikValues } from 'formik';
 import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
-import { generatePath, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { WorkflowSettingsForm } from '../../components';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors';
 import { useWorkflowsUIStates } from '../../hooks';
 import { WorkflowDetailModel, workflowsFacade } from '../../store/workflows';
 import { WORKFLOW_ALERT_CONTAINER_IDS } from '../../store/workflows/workflows.const';
-import { MODULE_PATHS } from '../../workflows.const';
+import { MODULE_PATHS, SITES_ROOT } from '../../workflows.const';
 import { WorkflowDetailRouteProps } from '../../workflows.types';
 
 const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
@@ -51,29 +51,39 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
 	const { navigate } = useNavigate();
+	const { generatePath } = useNavigate(SITES_ROOT);
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(
 		!isLoading && !!workflow && !!formValue,
 		formValue
 	);
 	const resetChangeDetectionOnNextRender = useOnNextRender(() => resetChangeDetection());
 	const [occurrencesLoading, setOccurrencesLoading] = useState(true);
-	const [occurrences, setOccurrences] = useState([]);
+	const [occurrences, setOccurrences] = useState<{ name: string; uuid: string }[]>([]);
 	const [error, setError] = useState();
 
 	const getOccurrences = async (): Promise<void> => {
 		setOccurrencesLoading(true);
 		const { data, error } = await workflowsFacade.workflowOccurrences(workflow.uuid);
 
-		setOccurrences(data);
+		setOccurrences(
+			data.map(site => ({
+				name: site.data.name,
+				uuid: site.uuid,
+			}))
+		);
 		setError(error);
 
 		setOccurrencesLoading(false);
 	};
 
 	useEffect(() => {
+		if (!workflow) {
+			return;
+		}
+
 		getOccurrences();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [workflow.uuid]);
+	}, [workflow]);
 
 	/**
 	 * Methods
