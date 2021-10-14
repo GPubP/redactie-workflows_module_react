@@ -25,7 +25,7 @@ const TransitionsTable: FC<TransitionsTableProps> = ({
 	 */
 	const [t] = useCoreTranslation();
 	const isTenant = isTenantWorfklow(workflow);
-	const { navigate } = useNavigate(SITES_ROOT);
+	const { navigate } = useNavigate(siteId ? SITES_ROOT : undefined);
 
 	const statusRows = useMemo(() => {
 		if (!statuses || !workflow || !roles) {
@@ -66,11 +66,16 @@ const TransitionsTable: FC<TransitionsTableProps> = ({
 							},
 						],
 						navigate: (uuid: string) =>
-							navigate(MODULE_PATHS.site.workflowTransitionDetail, {
-								workflowStatusUuid: uuid,
-								workflowUuid: workflow.uuid,
-								siteId,
-							}),
+							siteId
+								? navigate(MODULE_PATHS.site.workflowTransitionDetail, {
+										workflowStatusUuid: uuid,
+										workflowUuid: workflow.uuid,
+										siteId,
+								  })
+								: navigate(MODULE_PATHS.workflowTransitionDetail, {
+										workflowStatusUuid: uuid,
+										workflowUuid: workflow.uuid,
+								  }),
 					};
 
 					return acc;
@@ -98,11 +103,16 @@ const TransitionsTable: FC<TransitionsTableProps> = ({
 				from: status.data.name,
 				to: [],
 				navigate: (uuid: string) =>
-					navigate(MODULE_PATHS.site.workflowTransitionDetail, {
-						workflowStatusUuid: uuid,
-						workflowUuid: workflow.uuid,
-						siteId,
-					}),
+					siteId
+						? navigate(MODULE_PATHS.site.workflowTransitionDetail, {
+								workflowStatusUuid: uuid,
+								workflowUuid: workflow.uuid,
+								siteId,
+						  })
+						: navigate(MODULE_PATHS.workflowTransitionDetail, {
+								workflowStatusUuid: uuid,
+								workflowUuid: workflow.uuid,
+						  }),
 			};
 		});
 	}, [statuses, workflow, roles]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -112,7 +122,7 @@ const TransitionsTable: FC<TransitionsTableProps> = ({
 			fixed
 			className="u-margin-top"
 			tableClassName="a-table--fixed--sm"
-			columns={TRANSITION_COLUMNS(t, mySecurityrights, isTenant || readonly)}
+			columns={TRANSITION_COLUMNS(t, mySecurityrights, (isTenant && !!siteId) || readonly)}
 			rows={statusRows}
 			noDataMessage={noDataMessage || t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
 			loading={loading}

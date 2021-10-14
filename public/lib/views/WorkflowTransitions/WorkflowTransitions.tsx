@@ -1,15 +1,10 @@
-import { Table } from '@acpaas-ui/react-editorial-components';
-import { LoadingState, useNavigate } from '@redactie/utils';
+import { LoadingState } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 
+import { TransitionsTable } from '../../components';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
 import { usePaginatedWorkflowStatuses } from '../../hooks';
-import { TransitionRequirementTypes, WorkflowPopulatedTransition } from '../../services/workflows';
-import { MODULE_PATHS } from '../../workflows.const';
 import { WorkflowDetailRouteProps } from '../../workflows.types';
-
-import { TRANSITION_COLUMNS } from './workflowTransitions.const';
-import { WorkflowTransitionsTableRow } from './workflowTransitions.types';
 
 const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 	/**
@@ -20,95 +15,26 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 		mySecurityRightsLoadingState,
 		mySecurityrights,
 	] = rolesRightsConnector.api.hooks.useMySecurityRightsForTenant(true);
-	const { navigate } = useNavigate();
 	const { loading, pagination } = usePaginatedWorkflowStatuses({
 		page: 1,
 		pagesize: -1,
 	});
-	const [statusRows, setStatusRows] = useState<WorkflowTransitionsTableRow[]>([]);
 	const [rolesLoadingState, roles] = rolesRightsConnector.api.hooks.useSiteRoles();
+	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
+
+	useEffect(() => {
+		if (
+			!loading &&
+			mySecurityRightsLoadingState === LoadingState.Loaded &&
+			rolesLoadingState === LoadingState.Loaded
+		) {
+			setInitialLoading(LoadingState.Loaded);
+		}
+	}, [loading, mySecurityRightsLoadingState, rolesLoadingState]);
 
 	useEffect(() => {
 		rolesRightsConnector.api.store.roles.service.getDefaultSiteRoles();
 	}, []);
-
-	useEffect(() => {
-		if (!pagination?.data || !workflow || !roles) {
-			return;
-		}
-
-		const groupedTransitions = (workflow.data
-			.transitions as WorkflowPopulatedTransition[]).reduce(
-			(
-				acc: {
-					[fromId: string]: WorkflowTransitionsTableRow;
-				},
-				transition: WorkflowPopulatedTransition
-			) => {
-				const requirement = transition.requirements.find(
-					requirement => requirement.type === TransitionRequirementTypes.userHasRole
-				);
-
-				const transitionRoles = requirement
-					? (requirement.value as string[])
-					: roles?.map(role => role.name);
-
-				if (!acc[transition.from.uuid]) {
-					acc[transition.from.uuid] = {
-						uuid: transition.from.uuid,
-						from: transition.from.data.name,
-						to: [
-							{
-								name: transition.to.data.name,
-								roles: transitionRoles,
-							},
-						],
-						navigate: (uuid: string) =>
-							navigate(MODULE_PATHS.workflowTransitionDetail, {
-								workflowStatusUuid: uuid,
-								workflowUuid: workflow.uuid,
-							}),
-					};
-
-					return acc;
-				}
-
-				acc[transition.from.uuid].to = [
-					...acc[transition.from.uuid].to,
-					{
-						name: transition.to.data.name,
-						roles: transitionRoles,
-					},
-				];
-
-				return acc;
-			},
-			{}
-		);
-
-		const mapStatuses: WorkflowTransitionsTableRow[] = pagination.data.map(status => {
-			if (groupedTransitions[status.uuid as string]) {
-				return groupedTransitions[status.uuid as string];
-			}
-
-			return {
-				uuid: status.uuid as string,
-				from: status.data.name,
-				to: [],
-				navigate: (uuid: string) =>
-					navigate(MODULE_PATHS.workflowTransitionDetail, {
-						workflowStatusUuid: uuid,
-						workflowUuid: workflow.uuid,
-					}),
-			};
-		});
-
-		setStatusRows(mapStatuses);
-	}, [pagination, workflow, roles]); // eslint-disable-line react-hooks/exhaustive-deps
-
-	/**
-	 * Methods
-	 */
 
 	/**
 	 * Render
@@ -116,18 +42,14 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 
 	const renderStatusesTable = (): ReactElement => {
 		return (
-			<Table
-				fixed
-				className="u-margin-top"
-				tableClassName="a-table--fixed--sm"
-				columns={TRANSITION_COLUMNS(t, mySecurityrights)}
-				rows={statusRows}
+			<TransitionsTable
+				statuses={pagination?.data || []}
+				readonly={false}
+				roles={roles || []}
+				workflow={workflow}
+				mySecurityrights={mySecurityrights}
+				loading={initialLoading !== LoadingState.Loaded}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
-				loading={
-					loading &&
-					mySecurityRightsLoadingState === LoadingState.Loaded &&
-					rolesLoadingState === LoadingState.Loaded
-				}
 			/>
 		);
 	};

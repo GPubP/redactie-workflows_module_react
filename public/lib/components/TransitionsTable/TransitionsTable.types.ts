@@ -16,8 +16,8 @@ export interface TransitionsTableProps {
 	workflow: WorkflowDetailResponse | undefined;
 	mySecurityrights: string[];
 	roles: any[]; // TODO: export RolesResponse type
-	siteId: string;
 	readonly: boolean;
 	loading: boolean;
 	noDataMessage?: string;
+	siteId?: string;
 }
