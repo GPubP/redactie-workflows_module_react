@@ -79,9 +79,13 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 	};
 
 	useEffect(() => {
+		if (!workflow) {
+			return;
+		}
+
 		getOccurrences();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [siteId, workflow.uuid]);
+	}, [siteId, workflow]);
 
 	const [
 		mySecurityRightsLoading,
@@ -141,7 +145,7 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 				successAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.overview,
 				errorAlertContainerId: WORKFLOW_ALERT_CONTAINER_IDS.update,
 			})
-			.then(() => navigate(MODULE_PATHS.site.workflowsOverview))
+			.then(() => navigate(MODULE_PATHS.site.workflowsOverview, { siteId }))
 			.catch(() => setShowDeleteModal(false));
 	};
 
