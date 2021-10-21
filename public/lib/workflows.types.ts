@@ -1,6 +1,7 @@
 import { ModuleRouteConfig, RouteConfigComponentProps } from '@redactie/redactie-core';
 import { AlertProps } from '@redactie/utils';
 
+import { UsePaginatedWorkflowStatuses } from './hooks/usePaginatedWorkflowStatuses/usePaginatedWorkflowStatuses.types';
 import { UseWorkflow } from './hooks/useWorkflow/useWorkflow.types';
 import { CreateWorkflowPayload } from './services/workflows';
 import { WorkflowDetailModel, WorkflowsFacade } from './store/workflows';
@@ -56,5 +57,6 @@ export interface WorkflowsModuleAPI {
 	};
 	hooks: {
 		useWorkflow: UseWorkflow;
+		usePaginatedWorkflowStatuses: UsePaginatedWorkflowStatuses;
 	};
 }
