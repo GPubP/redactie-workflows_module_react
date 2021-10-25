@@ -371,10 +371,14 @@ export class WorkflowsFacade {
 				this.detailStore.upsert(workflow.uuid, workflow);
 				this.listPaginator.clearCache();
 
-				showAlert(
-					WORKFLOW_ALERT_CONTAINER_IDS.update,
-					'success',
-					alertMessages.update.success
+				setTimeout(
+					() =>
+						showAlert(
+							WORKFLOW_ALERT_CONTAINER_IDS.update,
+							'success',
+							alertMessages.update.success
+						),
+					300
 				);
 
 				return workflow;
