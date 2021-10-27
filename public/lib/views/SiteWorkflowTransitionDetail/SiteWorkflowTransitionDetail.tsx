@@ -89,7 +89,7 @@ export const SiteWorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({
 		!detailState?.isFetching && !isEmpty(formValue),
 		formValue
 	);
-	const forceNavigateToOverview = useOnNextRender(() =>
+	const [forceNavigateToOverview] = useOnNextRender(() =>
 		navigate(MODULE_PATHS.site.workflowTransitions, { workflowUuid, siteId })
 	);
 
