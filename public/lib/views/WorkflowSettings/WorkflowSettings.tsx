@@ -56,7 +56,7 @@ const WorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 		!isLoading && !!workflow && !!formValue,
 		formValue
 	);
-	const resetChangeDetectionOnNextRender = useOnNextRender(() => resetChangeDetection());
+	const [resetChangeDetectionOnNextRender] = useOnNextRender(() => resetChangeDetection());
 	const [occurrencesLoading, setOccurrencesLoading] = useState(true);
 	const [occurrences, setOccurrences] = useState<{ name: string; uuid: string }[]>([]);
 	const [error, setError] = useState();

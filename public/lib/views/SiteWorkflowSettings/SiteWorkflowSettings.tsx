@@ -59,7 +59,7 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 		!isLoading && !!workflow && !!formValue,
 		formValue
 	);
-	const resetChangeDetectionOnNextRender = useOnNextRender(() => resetChangeDetection());
+	const [resetChangeDetectionOnNextRender] = useOnNextRender(() => resetChangeDetection());
 	const [occurrences, setOccurrences] = useState([]);
 	const [occurrencesLoading, setOccurrencesLoading] = useState(true);
 	const { generatePath } = useNavigate(SITES_ROOT);
