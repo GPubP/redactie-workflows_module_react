@@ -2,7 +2,7 @@ import { AlertMessages } from '../../workflows.types';
 
 export const getAlertMessages = (
 	name?: string
-): AlertMessages<'create' | 'fetch' | 'fetchOne' | 'delete' | 'update'> => ({
+): AlertMessages<'create' | 'fetch' | 'fetchOne' | 'delete' | 'update' | 'fetchOccurrences'> => ({
 	create: {
 		success: {
 			title: 'Aangemaakt',
@@ -23,6 +23,13 @@ export const getAlertMessages = (
 		error: {
 			title: 'Ophalen',
 			message: 'Ophalen van status is mislukt',
+		},
+	},
+	fetchOccurrences: {
+		error: {
+			title: 'Er ging iets mis',
+			message:
+				'Er ging iets mis bij het ophalen van worklfows waarin deze status gebruikt wordt.',
 		},
 	},
 	delete: {

@@ -5,6 +5,7 @@ import {
 	UpdateWorkflowStatusPayload,
 } from '../../store/workflowStatuses/workflowStatuses.types';
 import { api } from '../api';
+import { WorkflowDetailResponse, WorkflowsResponse } from '../workflows';
 
 import {
 	DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS,
@@ -45,6 +46,12 @@ export class WorkflowStatusesApiService {
 	): Promise<WorkflowStatusDetailResponse> {
 		return await api
 			.put(`${WORKFLOW_STATUSES_PREFIX_URL}/${workflowStatus.uuid}`, { json: workflowStatus })
+			.json();
+	}
+
+	public async getWorkflowStatusOccurences(workflowStatusId: string): Promise<WorkflowsResponse> {
+		return await api
+			.get(`${WORKFLOW_STATUSES_PREFIX_URL}/${workflowStatusId}/workflow-occurrences`)
 			.json();
 	}
 }
