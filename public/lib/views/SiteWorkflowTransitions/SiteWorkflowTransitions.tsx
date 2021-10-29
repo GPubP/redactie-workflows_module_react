@@ -19,10 +19,15 @@ const SiteWorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => 
 		siteUuid: siteId,
 		onlyKeys: true,
 	});
-	const { loading, pagination } = usePaginatedWorkflowStatuses({
-		page: 1,
-		pagesize: -1,
-	});
+	const { loading, pagination } = usePaginatedWorkflowStatuses(
+		{
+			page: 1,
+			pagesize: -1,
+		},
+		{
+			siteId,
+		}
+	);
 	const [rolesLoadingState, roles] = rolesRightsConnector.api.hooks.useSiteRoles();
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 

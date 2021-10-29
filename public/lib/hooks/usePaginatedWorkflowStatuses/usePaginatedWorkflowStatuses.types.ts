@@ -5,7 +5,11 @@ import { WorkflowStatusesListModel } from '../../store/workflowStatuses';
 
 export type UsePaginatedWorkflowStatuses = (
 	sitesSearchParams: SearchParams,
-	clearCache?: boolean
+	options?: {
+		clearCache?: boolean;
+		sparse?: boolean;
+		siteId?: string;
+	}
 ) => {
 	loading: boolean;
 	pagination: PaginationResponse<WorkflowStatusesListModel> | null;

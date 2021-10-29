@@ -143,6 +143,54 @@ export class WorkflowStatusesFacade {
 		);
 	}
 
+	public getSiteWorkflowStatusesPaginated(
+		siteId: string,
+		searchParams: SearchParams,
+		options?: GetWorkflowStatusesPaginatedPayloadOptions
+	): Observable<PaginationResponse<WorkflowStatusesListModel>> {
+		const defaultOptions = {
+			alertContainerId: WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.fetch,
+			clearCache: false,
+		};
+		const serviceOptions = {
+			...defaultOptions,
+			...options,
+		};
+		if (serviceOptions.clearCache) {
+			this.listPaginator.clearCache();
+		}
+		const alertMessages = getAlertMessages();
+
+		return from(
+			this.service
+				.getSiteWorkflowStatuses(siteId, searchParams)
+				.then(response => {
+					const paging = response._page;
+
+					this.listStore.update({
+						paging,
+						error: null,
+					});
+
+					return {
+						perPage: paging.size,
+						currentPage: workflowStatusesListPaginator.currentPage,
+						lastPage: paging.totalPages,
+						total: paging.totalElements,
+						data: response?._embedded.statuses,
+					};
+				})
+				.catch(error => {
+					showAlert(serviceOptions.alertContainerId, 'error', alertMessages.fetch.error);
+					this.listStore.update({
+						error,
+						isFetching: false,
+					});
+					throw error;
+				})
+		);
+	}
+
 	// DETAIL FUNCTIONS
 	public hasWorkflowStatus(workflowStatusUuid: string): boolean {
 		return this.detailQuery.hasEntity(workflowStatusUuid);

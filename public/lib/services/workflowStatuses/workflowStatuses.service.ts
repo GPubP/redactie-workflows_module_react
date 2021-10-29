@@ -16,12 +16,25 @@ import {
 	WorkflowStatusesResponse,
 } from './workflowStatuses.service.types';
 
+import { SITE_WORKFLOW_STATUSES_PREFIX_URL } from '.';
+
 export class WorkflowStatusesApiService {
 	public async getWorkflowStatuses(
 		searchParams: SearchParams = DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS
 	): Promise<WorkflowStatusesResponse> {
 		return await api
 			.get(WORKFLOW_STATUSES_PREFIX_URL, { searchParams: parseSearchParams(searchParams) })
+			.json();
+	}
+
+	public async getSiteWorkflowStatuses(
+		siteId: string,
+		searchParams: SearchParams = DEFAULT_WORKFLOW_STATUSES_SEARCH_PARAMS
+	): Promise<WorkflowStatusesResponse> {
+		return await api
+			.get(`${SITE_WORKFLOW_STATUSES_PREFIX_URL}/${siteId}/statuses`, {
+				searchParams: parseSearchParams(searchParams),
+			})
 			.json();
 	}
 
