@@ -29,15 +29,10 @@ import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from '../../store/workflowStatu
 import { MODULE_PATHS } from '../../workflows.const';
 import { WorkflowModuleRouteProps, WorkflowsMatchProps } from '../../workflows.types';
 
-import {
-	DEFAULT_FILTER_FORM,
-	DEFAULT_OVERVIEW_QUERY_PARAMS,
-	OVERVIEW_COLUMNS,
-} from './workflowStatusesOverview.const';
+import { DEFAULT_OVERVIEW_QUERY_PARAMS, OVERVIEW_COLUMNS } from './workflowStatusesOverview.const';
 import { WorkflowStatusesOverviewTableRow } from './workflowStatusesOverview.types';
 
 const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () => {
-	const [filterFormState, setFilterFormState] = useState<FilterFormState>(DEFAULT_FILTER_FORM);
 	const [t] = useCoreTranslation();
 	const breadcrumbs = useRoutesBreadcrumbs();
 	const { navigate } = useNavigate();
@@ -54,13 +49,6 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 			setInitialLoading(LoadingState.Loaded);
 		}
 	}, [mySecurityRightsLoadingState]);
-
-	// Set initial values with query params
-	useEffect(() => {
-		setFilterFormState({
-			search: query.search ?? '',
-		});
-	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	/**
 	 * Functions
@@ -84,15 +72,10 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 			page: 1,
 			search: undefined,
 		});
-		setFilterFormState(DEFAULT_FILTER_FORM);
 	};
 
 	const clearFilter = (item: FilterItem): void => {
 		setQuery({ [item.key as string]: '' });
-		setFilterFormState({
-			...filterFormState,
-			[item.key as string]: '',
-		});
 	};
 
 	const onPageChange = (page: number): void => {
@@ -109,13 +92,13 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 	};
 
 	const onApplyFilters = (values: FilterFormState): void => {
-		setFilterFormState(values);
 		setQuery({
 			page: 1,
 			search: values.search || undefined,
 		});
 	};
 
+	const filterFormState: FilterFormState = { search: query.search ?? '' };
 	const activeSorting = parseStringToOrderBy(query.sort ?? '');
 	const activeFilters = createFilters(filterFormState);
 
@@ -137,7 +120,7 @@ const WorkflowStatusesOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>
 		return (
 			<>
 				<FilterForm
-					initialState={DEFAULT_FILTER_FORM}
+					initialState={filterFormState}
 					onCancel={clearAllFilters}
 					onSubmit={onApplyFilters}
 					deleteActiveFilter={clearFilter}

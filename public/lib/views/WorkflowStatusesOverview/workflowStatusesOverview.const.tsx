@@ -9,10 +9,6 @@ import { CORE_TRANSLATIONS, rolesRightsConnector } from '../../connectors';
 
 import { WorkflowStatusesOverviewTableRow } from './workflowStatusesOverview.types';
 
-export const DEFAULT_FILTER_FORM = {
-	search: '',
-};
-
 export const DEFAULT_OVERVIEW_QUERY_PARAMS = {
 	search: {
 		defaultValue: '',
