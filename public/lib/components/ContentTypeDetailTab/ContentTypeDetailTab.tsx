@@ -19,8 +19,8 @@ import {
 } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import { Field, Formik } from 'formik';
-import { equals, isEmpty, uniq } from 'ramda';
-import React, { FC, ReactElement, useEffect, useState } from 'react';
+import { isEmpty, uniq } from 'ramda';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { TransitionsTable } from '../../components';
 import { rolesRightsConnector } from '../../connectors';
@@ -79,10 +79,22 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	const [newWorkflowStatuses, setNewWorkflowStatuses] = useState<SelectOption[]>([]);
 	const [formState, setFormState] = useState<StatusSelectFormState>({ statuses: [] });
 	const [statusMapping, setStatusMapping] = useState<{ from: string; to: string }[]>([]);
-	const [formValid, setFormValid] = useState<boolean>(false);
+	const [formValid, setFormValid] = useState<boolean>(true);
 	const [, , , contentType] = contentTypeConnector.hooks.useContentType();
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [newWorkflowId, setNewWorkflowId] = useState<string>();
+	const disableSave = useMemo(() => {
+		return !hasChanges || !formValid;
+	}, [formValid, hasChanges]);
+	const showStatusSelect = useMemo(() => {
+		return (
+			!isEmpty(initialWorkflowStatuses) &&
+			!isEmpty(newWorkflowStatuses) &&
+			!!initialWorkflowStatuses.find(
+				status => !newWorkflowStatuses.find(newStatus => newStatus.value === status.value)
+			)
+		);
+	}, [initialWorkflowStatuses, newWorkflowStatuses]);
 
 	useEffect(() => {
 		rolesRightsConnector.api.store.roles.service.getSiteRoles(siteId);
@@ -139,6 +151,8 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 		}
 
 		if (workflow?.uuid !== value?.config?.workflow) {
+			setStatusMapping([]);
+
 			const statusMap = getStatusMap(
 				workflow?.data.transitions as WorkflowPopulatedTransition[]
 			);
@@ -162,6 +176,11 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 			setFormState({
 				statuses: state,
 			});
+
+			if (state.find(statusConfig => !statusConfig.to.uuid)) {
+				setFormValid(false);
+			}
+
 			setNewWorkflowStatuses(statusMap.sort());
 
 			return;
@@ -268,18 +287,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 												{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
 											</Button>
 											<Button
-												disabled={
-													!hasChanges &&
-													(!formValid ||
-														!(
-															!isEmpty(initialWorkflowStatuses) &&
-															!isEmpty(newWorkflowStatuses) &&
-															equals(
-																initialWorkflowStatuses,
-																newWorkflowStatuses
-															)
-														))
-												}
+												disabled={disableSave}
 												onClick={submitForm}
 												type="success"
 												htmlType="submit"
@@ -330,25 +338,23 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 						);
 					}}
 				</Formik>
-				{!isEmpty(initialWorkflowStatuses) &&
-					!isEmpty(newWorkflowStatuses) &&
-					!equals(initialWorkflowStatuses, newWorkflowStatuses) && (
-						<div className={cx('status-warning__wrapper', 'u-padding', 'u-margin-top')}>
-							<h5>Deze workflow gebruikt andere statussen.</h5>
-							<p className="u-margin-top">
-								De workflow die je selecteerde bevat één of meerdere statussen die
-								niet overeenkomen met de huidige actieve workflow. Kies een
-								vervangende status.
-							</p>
-							<StatusSelectForm
-								initialState={formState}
-								from={initialWorkflowName as string}
-								to={workflow?.data.name as string}
-								statuses={newWorkflowStatuses}
-								onChange={onStatusSelectFormChange}
-							/>
-						</div>
-					)}
+				{showStatusSelect && (
+					<div className={cx('status-warning__wrapper', 'u-padding', 'u-margin-top')}>
+						<h5>Deze workflow gebruikt andere statussen.</h5>
+						<p className="u-margin-top">
+							De workflow die je selecteerde bevat één of meerdere statussen die niet
+							overeenkomen met de huidige actieve workflow. Kies een vervangende
+							status.
+						</p>
+						<StatusSelectForm
+							initialState={formState}
+							from={initialWorkflowName as string}
+							to={workflow?.data.name as string}
+							statuses={newWorkflowStatuses}
+							onChange={onStatusSelectFormChange}
+						/>
+					</div>
+				)}
 				<div className="row u-margin-top-lg">
 					<div className="col-xs-12">
 						<p>{workflow?.data.description}</p>

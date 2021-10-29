@@ -24,7 +24,8 @@ export const TRANSITION_COLUMNS = (
 			width: '15%',
 		},
 		{
-			label: '',
+			label: 'icon',
+			hideLabel: true,
 			disableSorting: true,
 			width: '3%',
 			component(value, { to }) {
@@ -71,7 +72,8 @@ export const TRANSITION_COLUMNS = (
 			},
 		},
 		{
-			label: '',
+			label: 'Button',
+			hideLabel: true,
 			classList: ['u-text-right'],
 			disableSorting: true,
 			width: '10%',
