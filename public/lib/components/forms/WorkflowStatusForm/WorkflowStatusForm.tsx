@@ -1,18 +1,29 @@
 import {
+	Link as AUILink,
 	Button,
 	Card,
 	CardBody,
+	CardDescription,
 	CardTitle,
 	Textarea,
 	TextField,
 } from '@acpaas-ui/react-components';
-import { CopyValue, DeletePrompt, ErrorMessage, FormikOnChangeHandler } from '@redactie/utils';
+import {
+	CopyValue,
+	DataLoader,
+	DeletePrompt,
+	ErrorMessage,
+	FormikOnChangeHandler,
+} from '@redactie/utils';
 import { Field, Formik } from 'formik';
 import kebabCase from 'lodash.kebabcase';
 import React, { FC, ReactElement, useState } from 'react';
+import { generatePath } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import { DefaultFormActions } from '../..';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../../connectors';
+import { MODULE_PATHS } from '../../../workflows.const';
 
 import { WORKFLOW_STATUS_FORM_VALIDATION_SCHEMA } from './workflowStatusForm.const';
 import { WorkflowStatusFormProps, WorkflowStatusFormState } from './workflowStatusForm.types';
@@ -26,6 +37,8 @@ const WorkflowStatusForm: FC<WorkflowStatusFormProps> = ({
 	canDelete = false,
 	onDelete,
 	children,
+	occurrences,
+	occurrencesLoading,
 	onCancel = () => null,
 	onSubmit = () => null,
 	onChange = () => null,
@@ -46,23 +59,62 @@ const WorkflowStatusForm: FC<WorkflowStatusFormProps> = ({
 	};
 
 	const renderDelete = (): ReactElement => {
+		const pluralSingularText = occurrences?.length === 1 ? 'workflow' : 'workflows';
+		const text = (
+			<>
+				Deze status wordt gebruikt op{' '}
+				<strong>
+					{occurrences?.length} {pluralSingularText}
+				</strong>
+			</>
+		);
+
+		const statusText =
+			(occurrences?.length || 0) > 0 ? (
+				<p> {text} en kan daarom niet verwijderd worden.</p>
+			) : (
+				<p>
+					Opgelet, indien u deze status verwijderd kan hij niet meer aan een workflow
+					worden toegevoegd.
+				</p>
+			);
+
 		return (
 			<>
+				{/* Should we provide a CardOccurences helper? */}
 				<Card className="u-margin-top">
 					<CardBody>
 						<CardTitle>Verwijderen</CardTitle>
-						<p>
-							Opgelet, indien u deze status verwijderd kan hij niet meer aan een
-							workflow worden toegevoegd.
-						</p>
-						<Button
-							onClick={() => setShowDeleteModal(true)}
-							className="u-margin-top"
-							type="danger"
-							iconLeft="trash-o"
-						>
-							{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
-						</Button>
+						<CardDescription>{statusText}</CardDescription>
+						{(occurrences?.length || 0) > 0 && (
+							<ul>
+								{occurrences?.map((occurrence: any, index: number) => (
+									<li key={`${index}_${occurrence.uuid}`}>
+										<AUILink
+											to={generatePath(
+												`${MODULE_PATHS.workflowCreateSettings}/`,
+												{
+													workflowUuid: occurrence.uuid,
+												}
+											)}
+											component={Link}
+										>
+											{occurrence.data.name}
+										</AUILink>
+									</li>
+								))}
+							</ul>
+						)}
+						{occurrences?.length === 0 && (
+							<Button
+								onClick={() => setShowDeleteModal(true)}
+								className="u-margin-top"
+								type="danger"
+								iconLeft="trash-o"
+							>
+								{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
+							</Button>
+						)}
 					</CardBody>
 				</Card>
 				<DeletePrompt
@@ -128,7 +180,12 @@ const WorkflowStatusForm: FC<WorkflowStatusFormProps> = ({
 								<ErrorMessage name="description" />
 							</div>
 						</div>
-						{onDelete && canDelete ? renderDelete() : null}
+						{canDelete && (
+							<DataLoader
+								loadingState={occurrencesLoading || false}
+								render={renderDelete}
+							/>
+						)}
 						{initialState.uuid && (
 							<div className="row u-margin-top">
 								<CopyValue

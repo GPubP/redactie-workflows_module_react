@@ -34,7 +34,12 @@ const WorkflowStatusEdit: FC<WorkflowModuleRouteProps> = () => {
 	 * Hooks
 	 */
 	const { workflowStatusUuid } = useParams<{ workflowStatusUuid: string }>();
-	const [workflowStatus, workflowStatusUI] = useWorkflowStatus(workflowStatusUuid);
+	const [
+		workflowStatus,
+		workflowStatusUI,
+		workflowStatusOccurrences,
+		workflowStatuseOccurrencesUI,
+	] = useWorkflowStatus(workflowStatusUuid, true);
 	const { navigate } = useNavigate();
 	const [t] = useCoreTranslation();
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
@@ -154,6 +159,8 @@ const WorkflowStatusEdit: FC<WorkflowModuleRouteProps> = () => {
 				onSubmit={onSubmit}
 				onChange={setFormState}
 				onDelete={onDelete}
+				occurrences={workflowStatusOccurrences}
+				occurrencesLoading={workflowStatuseOccurrencesUI?.isFetching}
 			>
 				{({ submitForm }) => (
 					<LeavePrompt when={hasChanges && !isSubmitting} onConfirm={submitForm} />
@@ -171,6 +178,10 @@ const WorkflowStatusEdit: FC<WorkflowModuleRouteProps> = () => {
 				<AlertContainer
 					toastClassName="u-margin-bottom"
 					containerId={WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.update}
+				/>
+				<AlertContainer
+					toastClassName="u-margin-bottom"
+					containerId={WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.fetchOne}
 				/>
 				<DataLoader loadingState={initialLoading} render={renderWorkflowStatusEdit} />
 			</Container>

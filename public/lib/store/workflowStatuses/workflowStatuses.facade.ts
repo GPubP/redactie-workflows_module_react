@@ -8,6 +8,7 @@ import {
 	workflowStatusesApiService,
 	WorkflowStatusesApiService,
 } from '../../services/workflowStatuses';
+import { Workflow } from '../../services/workflows';
 
 import {
 	WorkflowStatusDetailModel,
@@ -26,6 +27,15 @@ import {
 	workflowStatusesListStore,
 	WorkflowStatusesListStore,
 } from './list';
+import {
+	workflowStatusOccurrencesDetailQuery,
+	WorkflowStatusOccurrencesDetailQuery,
+	WorkflowStatusOccurrencesDetailUIModel,
+} from './occurrences';
+import {
+	workflowStatusOccurrencesDetailStore,
+	WorkflowStatusOccurrencesDetailStore,
+} from './occurrences/workflowOccurrences-detail.store';
 import { getAlertMessages } from './workflowStatuses.alertMessages';
 import { WORKFLOW_STATUSES_ALERT_CONTAINER_IDS } from './workflowStatuses.const';
 import {
@@ -42,6 +52,8 @@ export class WorkflowStatusesFacade {
 		public listPaginator: PaginatorPlugin<WorkflowStatusesListState>,
 		protected detailStore: WorkflowStatusesDetailStore,
 		protected detailQuery: WorkflowStatusesDetailQuery,
+		protected occurrencesStore: WorkflowStatusOccurrencesDetailStore,
+		protected occurrencesQuery: WorkflowStatusOccurrencesDetailQuery,
 		protected service: WorkflowStatusesApiService
 	) {}
 
@@ -69,6 +81,18 @@ export class WorkflowStatusesFacade {
 		workflowStatusUuid?: string
 	): Observable<WorkflowStatusDetailUIModel | undefined> {
 		return this.detailQuery.ui.selectEntity(workflowStatusUuid);
+	}
+
+	public selectWorkflowStatusOccurrences(
+		workflowStatusUuid: string
+	): Observable<Workflow[] | undefined> {
+		return this.occurrencesQuery.selectEntity(workflowStatusUuid, 'items');
+	}
+
+	public selectWorkflowStatusOccurrencesUIState(
+		workflowStatusUuid?: string
+	): Observable<WorkflowStatusOccurrencesDetailUIModel | undefined> {
+		return this.occurrencesQuery.ui.selectEntity(workflowStatusUuid);
 	}
 
 	// LIST FUNCTIONS
@@ -268,6 +292,41 @@ export class WorkflowStatusesFacade {
 				throw new Error('Deleting workflow status failed!');
 			});
 	}
+
+	public async getWorkflowStatusOccurrences(
+		workflowStatusUuid: string,
+		options: { force: boolean } = { force: true }
+	): Promise<void> {
+		if (this.occurrencesQuery.hasEntity(workflowStatusUuid) && !options.force) {
+			return Promise.resolve();
+		}
+
+		const alertMessages = getAlertMessages();
+		this.occurrencesStore.setIsFetchingEntity(true, workflowStatusUuid);
+
+		return this.service
+			.getWorkflowStatusOccurences(workflowStatusUuid)
+			.then(response => {
+				this.occurrencesStore.upsert(workflowStatusUuid as string, {
+					items: response._embedded.workflows,
+				});
+				this.occurrencesStore.ui.upsert(workflowStatusUuid, {
+					error: null,
+					isFetching: false,
+				});
+			})
+			.catch(error => {
+				showAlert(
+					WORKFLOW_STATUSES_ALERT_CONTAINER_IDS.fetchOne,
+					'error',
+					alertMessages.fetchOccurrences.error
+				);
+				this.occurrencesStore.ui.upsert(workflowStatusUuid, {
+					error,
+					isFetching: false,
+				});
+			});
+	}
 }
 
 export const workflowStatusesFacade = new WorkflowStatusesFacade(
@@ -276,5 +335,7 @@ export const workflowStatusesFacade = new WorkflowStatusesFacade(
 	workflowStatusesListPaginator,
 	workflowStatusesDetailStore,
 	workflowStatusesDetailQuery,
+	workflowStatusOccurrencesDetailStore,
+	workflowStatusOccurrencesDetailQuery,
 	workflowStatusesApiService
 );

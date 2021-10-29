@@ -1,5 +1,7 @@
 import { FormikProps } from 'formik';
 
+import { Workflow } from '../../../services/workflows';
+
 export interface WorkflowStatusFormState {
 	uuid?: string;
 	name: string;
@@ -14,6 +16,8 @@ export interface WorkflowStatusFormProps {
 	isDeleting?: boolean;
 	hasChanges?: boolean;
 	canDelete?: boolean;
+	occurrences?: Workflow[];
+	occurrencesLoading?: boolean;
 	onCancel?: (resetForm: FormikProps<WorkflowStatusFormState>['resetForm']) => void;
 	onSubmit?: (values: WorkflowStatusFormState) => void;
 	onChange?: (values: WorkflowStatusFormState) => void;
