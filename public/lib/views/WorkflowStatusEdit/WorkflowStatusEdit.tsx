@@ -68,8 +68,6 @@ const WorkflowStatusEdit: FC<WorkflowModuleRouteProps> = () => {
 		navigate(MODULE_PATHS.workflowStatusesOverview)
 	);
 
-	console.log(workflowStatusOccurrences);
-
 	const canDelete = useMemo(
 		() =>
 			rolesRightsConnector.api.helpers.checkSecurityRights(
