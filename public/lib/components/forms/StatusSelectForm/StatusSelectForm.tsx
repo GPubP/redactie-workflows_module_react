@@ -27,14 +27,14 @@ const StatusSelectForm: FC<StatusSelectFormProps> = ({
 		setFieldValue: (field: string, value: any, shouldValidate?: boolean | undefined) => void
 	): ReactElement => {
 		return (
-			<>
+			<React.Fragment key={index}>
 				<p className={cx('status-select-form__from-status')}>{status.from.name}</p>
 				<Icon name="angle-right" className={cx('status-select-form__arrow')} />
 				{status.invalidFrom ? (
 					<Field
 						as={Select}
-						id={`statuses[${index}]`}
-						name={`statuses[${index}]`}
+						id={`statuses[${index}].to.uuid`}
+						name={`statuses[${index}].to.uuid`}
 						placeholder="Selecteer een nieuwe status"
 						options={statuses}
 						onChange={(e: any): void => {
@@ -54,7 +54,7 @@ const StatusSelectForm: FC<StatusSelectFormProps> = ({
 				) : (
 					<p className={cx('status-select-form__to-status')}>{status.to.name}</p>
 				)}
-			</>
+			</React.Fragment>
 		);
 	};
 
