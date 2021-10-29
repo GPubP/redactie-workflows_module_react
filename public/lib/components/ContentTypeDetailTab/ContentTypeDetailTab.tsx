@@ -19,7 +19,7 @@ import {
 } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import { Field, Formik } from 'formik';
-import { equals, isEmpty, uniq } from 'ramda';
+import { isEmpty, uniq } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { TransitionsTable } from '../../components';
