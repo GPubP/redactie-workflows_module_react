@@ -11,10 +11,6 @@ import styles from '../WorkflowTransitions/workflowTransitions.module.scss';
 
 import { WorkflowsOverviewTableRow } from './siteWorkflowsOverview.types';
 
-export const DEFAULT_FILTER_FORM = {
-	search: '',
-};
-
 export const DEFAULT_OVERVIEW_QUERY_PARAMS = {
 	search: {
 		defaultValue: '',
