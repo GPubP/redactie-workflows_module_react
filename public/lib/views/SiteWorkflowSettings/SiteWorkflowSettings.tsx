@@ -300,6 +300,7 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 				formikRef={instance => (formikRef.current = instance || undefined)}
 				workflow={workflow}
 				isUpdate={isUpdate}
+				disabled={!canUpsert}
 				onSubmit={onFormSubmit}
 			>
 				{({ submitForm }) => {
