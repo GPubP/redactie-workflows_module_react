@@ -140,7 +140,11 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 				...(workflow as WorkflowDetailResponse),
 				data: {
 					...(workflow?.data as WorkflowData),
-					transitions: getTransitionsState(values, workflow?.data.transitions || []),
+					transitions: getTransitionsState(
+						workflowStatusUuid,
+						values,
+						workflow?.data.transitions || []
+					),
 				},
 			})
 			.then(response => {
