@@ -181,7 +181,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 				setFormValid(false);
 			}
 
-			setNewWorkflowStatuses(statusMap.sort());
+			setNewWorkflowStatuses(statusMap.filter(status => status.value !== 'Nieuw').sort());
 
 			return;
 		}
