@@ -27,8 +27,16 @@ import { rolesRightsConnector } from '../../connectors';
 import contentTypeConnector from '../../connectors/contentTypes/contentTypes';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { usePaginatedWorkflows, usePaginatedWorkflowStatuses, useWorkflow } from '../../hooks';
-import { WorkflowPopulatedTransition } from '../../services/workflows';
-import { StatusSelectForm, StatusSelectFormItem, StatusSelectFormState } from '../Forms';
+import {
+	WorkflowPopulatedTransition,
+	WorkflowPopulatedTransitionTarget,
+} from '../../services/workflows';
+import {
+	StatusSelectForm,
+	StatusSelectFormItem,
+	StatusSelectFormState,
+	WORKFLOW_TECHNICAL_STATES,
+} from '../Forms';
 
 import styles from './ContentTypeDetailTab.module.scss';
 import { ContentTypeDetailTabFormState } from './ContentTypeDetailTab.types';
@@ -181,7 +189,21 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 				setFormValid(false);
 			}
 
-			setNewWorkflowStatuses(statusMap.sort());
+			const transitionWithNewStatus = workflow.data.transitions.find(
+				transition =>
+					(transition.from as WorkflowPopulatedTransitionTarget).data.technicalState ===
+						WORKFLOW_TECHNICAL_STATES.NEW ||
+					(transition.to as WorkflowPopulatedTransitionTarget).data.technicalState ===
+						WORKFLOW_TECHNICAL_STATES.NEW
+			);
+
+			const newStatusId =
+				(transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).data
+					.technicalState === WORKFLOW_TECHNICAL_STATES.NEW
+					? (transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).uuid
+					: (transitionWithNewStatus?.to as WorkflowPopulatedTransitionTarget).uuid;
+
+			setNewWorkflowStatuses(statusMap.filter(status => status.value !== newStatusId).sort());
 
 			return;
 		}
