@@ -4,71 +4,55 @@ import { TransitionSelectFormState } from '../../components';
 import {
 	TransitionRequirementTypes,
 	WorkflowPopulatedTransition,
+	WorkflowRequirement,
 	WorkflowTransition,
 } from '../../services/workflows';
 
 export const getTransitionsState = (
+	fromUuid: string,
 	values: TransitionSelectFormState,
 	transitionsState: (WorkflowPopulatedTransition | WorkflowTransition)[]
 ): WorkflowTransition[] => {
-	let state = [...transitionsState];
-	let indexesToRemove: number[] = [];
+	const otherTransitions = transitionsState.filter(
+		transition => (transition as WorkflowPopulatedTransition).from.uuid !== fromUuid
+	);
 
-	for (const transition of Object.values(values)) {
+	return Object.values(values).reduce((acc, transition) => {
+		// No roles checked so transition is not defined
 		if (isEmpty(transition.roles)) {
-			indexesToRemove = [
-				...indexesToRemove,
-				...('index' in transition ? [transition?.index as number] : []),
-			];
-			continue;
+			return acc;
 		}
 
-		if (transition.index && Number(transition.index)) {
-			let requirements = [...state[transition.index].requirements];
+		let requirements: WorkflowRequirement[] = [];
+		const rolesRequirementIndex =
+			transition.index && Number(transition.index)
+				? requirements.findIndex(
+						requirement => requirement.type === TransitionRequirementTypes.userHasRole
+				  )
+				: -1;
 
-			const rolesRequirementIndex = requirements.findIndex(
-				requirement => requirement.type === TransitionRequirementTypes.userHasRole
-			);
-
-			if (rolesRequirementIndex > -1) {
-				requirements[rolesRequirementIndex] = {
+		if (rolesRequirementIndex > -1) {
+			requirements[rolesRequirementIndex] = {
+				value: transition.roles,
+				type: TransitionRequirementTypes.userHasRole,
+			};
+		} else {
+			requirements = [
+				...requirements,
+				{
 					value: transition.roles,
 					type: TransitionRequirementTypes.userHasRole,
-				};
-			} else {
-				requirements = [
-					...requirements,
-					{
-						value: transition.roles,
-						type: TransitionRequirementTypes.userHasRole,
-					},
-				];
-			}
-
-			state[transition.index] = {
-				from: (state[transition.index] as WorkflowPopulatedTransition).from.uuid,
-				to: (state[transition.index] as WorkflowPopulatedTransition).to.uuid,
-				requirements,
-			};
-			continue;
+				},
+			];
 		}
 
-		state = [
-			...state,
+		return [
+			...acc,
 			{
+				requirements,
 				from: transition.from.uuid,
 				to: transition.to.uuid,
-				requirements: [
-					{
-						type: TransitionRequirementTypes.userHasRole,
-						value: transition.roles,
-					},
-				],
 			},
 		];
-	}
-
-	return (state as WorkflowTransition[]).filter((value, index) => {
-		return indexesToRemove.indexOf(index) === -1;
-	});
+	}, otherTransitions as WorkflowTransition[]);
 };
