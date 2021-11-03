@@ -12,6 +12,7 @@ const WorkflowSettingsForm: FC<WorkflowSettingFormProps> = ({
 	children,
 	formikRef,
 	workflow,
+	disabled = false,
 	onSubmit,
 }) => {
 	return (
@@ -37,6 +38,7 @@ const WorkflowSettingsForm: FC<WorkflowSettingFormProps> = ({
 									name="data.name"
 									required
 									state={errors.data?.name && 'error'}
+									disabled={disabled}
 								/>
 								<ErrorMessage component="p" name="label" />
 							</div>
@@ -51,6 +53,7 @@ const WorkflowSettingsForm: FC<WorkflowSettingFormProps> = ({
 									name="data.description"
 									required
 									state={errors.data?.description && 'error'}
+									disabled={disabled}
 								/>
 								<small className="u-block u-text-light u-margin-top-xs">
 									Geef de workflow een duidelijke beschrijving voor in het

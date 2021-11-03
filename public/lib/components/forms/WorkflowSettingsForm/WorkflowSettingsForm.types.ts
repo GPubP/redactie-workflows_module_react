@@ -9,6 +9,7 @@ export interface WorkflowSettingFormProps {
 	children?: FormikChildrenFn<WorkflowDetailModel> | ReactNode;
 	formikRef: Ref<FormikProps<FormikValues>>;
 	isUpdate?: boolean;
+	disabled?: boolean;
 	workflow: WorkflowDetailResponse;
 	onSubmit: (values: any) => void;
 }
