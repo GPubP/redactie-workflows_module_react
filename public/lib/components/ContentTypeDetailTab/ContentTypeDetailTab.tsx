@@ -31,7 +31,12 @@ import {
 	WorkflowPopulatedTransition,
 	WorkflowPopulatedTransitionTarget,
 } from '../../services/workflows';
-import { StatusSelectForm, StatusSelectFormItem, StatusSelectFormState } from '../Forms';
+import {
+	StatusSelectForm,
+	StatusSelectFormItem,
+	StatusSelectFormState,
+	WORFLOW_TECHNICAL_STATES,
+} from '../Forms';
 
 import styles from './ContentTypeDetailTab.module.scss';
 import { ContentTypeDetailTabFormState } from './ContentTypeDetailTab.types';
@@ -187,14 +192,14 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 			const transitionWithNewStatus = workflow.data.transitions.find(
 				transition =>
 					(transition.from as WorkflowPopulatedTransitionTarget).data.technicalState ===
-						'new' ||
+						WORFLOW_TECHNICAL_STATES.NEW ||
 					(transition.to as WorkflowPopulatedTransitionTarget).data.technicalState ===
-						'new'
+						WORFLOW_TECHNICAL_STATES.NEW
 			);
 
 			const newStatusId =
 				(transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).data
-					.systemName === 'nieuw'
+					.technicalState === WORFLOW_TECHNICAL_STATES.NEW
 					? (transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).uuid
 					: (transitionWithNewStatus?.to as WorkflowPopulatedTransitionTarget).uuid;
 

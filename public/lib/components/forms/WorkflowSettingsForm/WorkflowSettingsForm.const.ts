@@ -6,3 +6,7 @@ export const WORKFLOW_SETTINGS_VALIDATION_SCHEMA = object().shape({
 		description: string().required('Beschrijving is een verplicht veld'),
 	}),
 });
+
+export enum WORFLOW_TECHNICAL_STATES {
+	NEW = 'new',
+}
