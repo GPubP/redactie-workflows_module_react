@@ -7,6 +7,6 @@ export const WORKFLOW_SETTINGS_VALIDATION_SCHEMA = object().shape({
 	}),
 });
 
-export enum WORFLOW_TECHNICAL_STATES {
+export enum WORKFLOW_TECHNICAL_STATES {
 	NEW = 'new',
 }

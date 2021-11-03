@@ -35,7 +35,7 @@ import {
 	StatusSelectForm,
 	StatusSelectFormItem,
 	StatusSelectFormState,
-	WORFLOW_TECHNICAL_STATES,
+	WORKFLOW_TECHNICAL_STATES,
 } from '../Forms';
 
 import styles from './ContentTypeDetailTab.module.scss';
@@ -192,14 +192,14 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 			const transitionWithNewStatus = workflow.data.transitions.find(
 				transition =>
 					(transition.from as WorkflowPopulatedTransitionTarget).data.technicalState ===
-						WORFLOW_TECHNICAL_STATES.NEW ||
+						WORKFLOW_TECHNICAL_STATES.NEW ||
 					(transition.to as WorkflowPopulatedTransitionTarget).data.technicalState ===
-						WORFLOW_TECHNICAL_STATES.NEW
+						WORKFLOW_TECHNICAL_STATES.NEW
 			);
 
 			const newStatusId =
 				(transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).data
-					.technicalState === WORFLOW_TECHNICAL_STATES.NEW
+					.technicalState === WORKFLOW_TECHNICAL_STATES.NEW
 					? (transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).uuid
 					: (transitionWithNewStatus?.to as WorkflowPopulatedTransitionTarget).uuid;
 
