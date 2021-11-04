@@ -91,6 +91,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	const [, , , contentType] = contentTypeConnector.hooks.useContentType();
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [newWorkflowId, setNewWorkflowId] = useState<string>();
+	const [newStatusId, setNewStatusId] = useState<string>();
 	const disableSave = useMemo(() => {
 		return !hasChanges || !formValid;
 	}, [formValid, hasChanges]);
@@ -99,10 +100,12 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 			!isEmpty(initialWorkflowStatuses) &&
 			!isEmpty(newWorkflowStatuses) &&
 			!!initialWorkflowStatuses.find(
-				status => !newWorkflowStatuses.find(newStatus => newStatus.value === status.value)
+				status =>
+					status.value !== newStatusId &&
+					!newWorkflowStatuses.find(newStatus => newStatus.value === status.value)
 			)
 		);
-	}, [initialWorkflowStatuses, newWorkflowStatuses]);
+	}, [initialWorkflowStatuses, newStatusId, newWorkflowStatuses]);
 
 	useEffect(() => {
 		rolesRightsConnector.api.store.roles.service.getSiteRoles(siteId);
@@ -204,6 +207,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 					: (transitionWithNewStatus?.to as WorkflowPopulatedTransitionTarget).uuid;
 
 			setNewWorkflowStatuses(statusMap.filter(status => status.value !== newStatusId).sort());
+			setNewStatusId(newStatusId);
 
 			return;
 		}
