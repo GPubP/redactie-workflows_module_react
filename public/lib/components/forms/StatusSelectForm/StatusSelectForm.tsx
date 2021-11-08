@@ -33,20 +33,20 @@ const StatusSelectForm: FC<StatusSelectFormProps> = ({
 				{status.invalidFrom ? (
 					<Field
 						as={Select}
-						id={`statuses[${index}].to.uuid`}
-						name={`statuses[${index}].to.uuid`}
+						id={`statuses[${index}].to.systemName`}
+						name={`statuses[${index}].to.systemName`}
 						placeholder="Selecteer een nieuwe status"
 						options={statuses}
 						onChange={(e: any): void => {
-							const statusUuid = e.target.value;
+							const statusSystemName = e.target.value;
 							const currentState = initialState.statuses[index];
 
 							setFieldValue(`statuses[${index}]`, {
 								...currentState,
 								to: {
-									name: statuses.find(status => status.value === statusUuid)
+									name: statuses.find(status => status.value === statusSystemName)
 										?.label,
-									uuid: statusUuid,
+									systemName: statusSystemName,
 								},
 							});
 						}}
