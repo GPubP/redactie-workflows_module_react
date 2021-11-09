@@ -1,5 +1,6 @@
 import Core from '@redactie/redactie-core';
-import { RolesRightsModuleAPI } from '@redactie/roles-rights-module';
+import { MySecurityRightModel, RolesRightsModuleAPI } from '@redactie/roles-rights-module';
+import { take } from 'rxjs/operators';
 
 class RolesRightsConnector {
 	public apiName = 'roles-rights-module';
@@ -12,6 +13,7 @@ class RolesRightsConnector {
 		updateWorkflowStatus: 'workflow-status_update',
 		readWorkflowStatus: 'workflow-status_read',
 		deleteWorkflowStatus: 'workflow-status_delete',
+		assignWorkflow: 'workflow_assign',
 	};
 	public api: RolesRightsModuleAPI;
 
@@ -25,6 +27,19 @@ class RolesRightsConnector {
 
 	public get facade(): RolesRightsModuleAPI['store']['roles']['service'] {
 		return this.api.store.roles.service;
+	}
+
+	public hasSecurityRight(siteId: string, requiredRights: string[]): boolean {
+		let securityRights: string[] = [];
+
+		this.api.store.mySecurityRights.query
+			.siteRights$(siteId)
+			.pipe(take(1))
+			.subscribe((rights: MySecurityRightModel[]) => {
+				securityRights = rights.map(right => right.attributes.key);
+			});
+
+		return this.api.helpers.checkSecurityRights(securityRights, requiredRights);
 	}
 }
 
