@@ -91,7 +91,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	const [, , , contentType] = contentTypeConnector.hooks.useContentType();
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [newWorkflowId, setNewWorkflowId] = useState<string>();
-	const [newStatusId, setNewStatusId] = useState<string>();
+	const [newStatusSystemName, setNewStatusSystemName] = useState<string>();
 	const disableSave = useMemo(() => {
 		return !hasChanges || !formValid;
 	}, [formValid, hasChanges]);
@@ -101,11 +101,11 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 			!isEmpty(newWorkflowStatuses) &&
 			!!initialWorkflowStatuses.find(
 				status =>
-					status.value !== newStatusId &&
+					status.value !== newStatusSystemName &&
 					!newWorkflowStatuses.find(newStatus => newStatus.value === status.value)
 			)
 		);
-	}, [initialWorkflowStatuses, newStatusId, newWorkflowStatuses]);
+	}, [initialWorkflowStatuses, newStatusSystemName, newWorkflowStatuses]);
 
 	useEffect(() => {
 		rolesRightsConnector.api.store.roles.service.getSiteRoles(siteId);
@@ -131,11 +131,11 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 					...acc,
 					{
 						label: transition.from.data.name,
-						value: transition.from.uuid,
+						value: transition.from.data.systemName,
 					},
 					{
 						label: transition.to.data.name,
-						value: transition.to.uuid,
+						value: transition.to.data.systemName,
 					},
 				];
 				return acc;
@@ -173,11 +173,11 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 
 				return {
 					from: {
-						uuid: status.value,
+						systemName: status.value,
 						name: status.label,
 					},
 					to: {
-						uuid: to ? to.value : null,
+						systemName: to ? to.value : null,
 						name: to ? to.label : null,
 					},
 					invalidFrom: !to,
@@ -188,7 +188,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 				statuses: state,
 			});
 
-			if (state.find(statusConfig => !statusConfig.to.uuid)) {
+			if (state.find(statusConfig => !statusConfig.to.systemName)) {
 				setFormValid(false);
 			}
 
@@ -200,14 +200,18 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 						WORKFLOW_TECHNICAL_STATES.NEW
 			);
 
-			const newStatusId =
+			const newSystemName =
 				(transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).data
 					.technicalState === WORKFLOW_TECHNICAL_STATES.NEW
-					? (transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).uuid
-					: (transitionWithNewStatus?.to as WorkflowPopulatedTransitionTarget).uuid;
+					? (transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).data
+							.systemName
+					: (transitionWithNewStatus?.to as WorkflowPopulatedTransitionTarget).data
+							.systemName;
 
-			setNewWorkflowStatuses(statusMap.filter(status => status.value !== newStatusId).sort());
-			setNewStatusId(newStatusId);
+			setNewWorkflowStatuses(
+				statusMap.filter(status => status.value !== newSystemName).sort()
+			);
+			setNewStatusSystemName(newSystemName);
 
 			return;
 		}
@@ -243,15 +247,15 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	const onStatusSelectFormChange = (values: StatusSelectFormState, isValid: boolean): void => {
 		const mapping = values.statuses.reduce(
 			(acc: { from: string; to: string }[], statusMap: StatusSelectFormItem) => {
-				if (statusMap.from.uuid === statusMap.to.uuid) {
+				if (statusMap.from.systemName === statusMap.to.systemName) {
 					return acc;
 				}
 
 				return [
 					...acc,
 					{
-						from: statusMap.from.name,
-						to: statusMap.to.name as string,
+						from: statusMap.from.systemName,
+						to: statusMap.to.systemName as string,
 					},
 				];
 			},

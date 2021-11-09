@@ -2,11 +2,11 @@ import { SelectOption } from '@redactie/utils';
 
 export interface StatusSelectFormItem {
 	from: {
-		uuid: string;
+		systemName: string;
 		name: string;
 	};
 	to: {
-		uuid: string | null;
+		systemName: string | null;
 		name: string | null;
 	};
 	invalidFrom: boolean;
