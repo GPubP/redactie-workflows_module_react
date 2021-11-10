@@ -34,7 +34,11 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	show: context => {
 		return !!context.siteId;
 	},
-	disabled: context => !context.isActive,
+	disabled: context =>
+		!context.isActive ||
+		!rolesRightsConnector.hasSecurityRight(context.siteId, [
+			rolesRightsConnector.securityRights.assignWorkflow,
+		]),
 });
 
 const WorkflowsComponent: FC<WorkflowModuleRouteProps> = ({ route, tenantId }) => {
