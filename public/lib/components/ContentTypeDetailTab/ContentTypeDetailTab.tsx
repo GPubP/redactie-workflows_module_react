@@ -112,8 +112,6 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 		]);
 	}, [mySecurityrights]);
 
-	console.log('canAssign', canAssign);
-
 	useEffect(() => {
 		rolesRightsConnector.api.store.roles.service.getSiteRoles(siteId);
 	}, [siteId]);
