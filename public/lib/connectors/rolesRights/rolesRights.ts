@@ -28,19 +28,6 @@ class RolesRightsConnector {
 	public get facade(): RolesRightsModuleAPI['store']['roles']['service'] {
 		return this.api.store.roles.service;
 	}
-
-	public hasSecurityRight(siteId: string, requiredRights: string[]): boolean {
-		let securityRights: string[] = [];
-
-		this.api.store.mySecurityRights.query
-			.siteRights$(siteId)
-			.pipe(take(1))
-			.subscribe((rights: MySecurityRightModel[]) => {
-				securityRights = rights.map(right => right.attributes.key);
-			});
-
-		return this.api.helpers.checkSecurityRights(securityRights, requiredRights);
-	}
 }
 
 const rolesRightsConnector = new RolesRightsConnector();

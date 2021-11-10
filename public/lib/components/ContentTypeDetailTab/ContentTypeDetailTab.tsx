@@ -106,6 +106,11 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 			)
 		);
 	}, [initialWorkflowStatuses, newStatusSystemName, newWorkflowStatuses]);
+	const canAssign = useMemo(() => {
+		return rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+			rolesRightsConnector.securityRights.assignWorkflow,
+		]);
+	}, [mySecurityrights]);
 
 	useEffect(() => {
 		rolesRightsConnector.api.store.roles.service.getSiteRoles(siteId);
@@ -295,6 +300,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 											label="Workflow"
 											placeholder="Selecteer een workflow"
 											options={workflowOptions}
+											disabled={!canAssign}
 										/>
 									</div>
 								</div>
@@ -306,27 +312,29 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 									</div>
 								</div>
 
-								<ActionBar className="o-action-bar--fixed" isOpen>
-									<ActionBarContentSection>
-										<div className="u-wrapper row end-xs">
-											<Button
-												className="u-margin-right-xs"
-												onClick={onCancel}
-												negative
-											>
-												{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
-											</Button>
-											<Button
-												disabled={disableSave}
-												onClick={submitForm}
-												type="success"
-												htmlType="submit"
-											>
-												{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
-											</Button>
-										</div>
-									</ActionBarContentSection>
-								</ActionBar>
+								{canAssign && (
+									<ActionBar className="o-action-bar--fixed" isOpen>
+										<ActionBarContentSection>
+											<div className="u-wrapper row end-xs">
+												<Button
+													className="u-margin-right-xs"
+													onClick={onCancel}
+													negative
+												>
+													{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
+												</Button>
+												<Button
+													disabled={disableSave}
+													onClick={submitForm}
+													type="success"
+													htmlType="submit"
+												>
+													{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
+												</Button>
+											</div>
+										</ActionBarContentSection>
+									</ActionBar>
+								)}
 								<ControlledModal
 									show={showConfirmModal}
 									onClose={onPromptCancel}
