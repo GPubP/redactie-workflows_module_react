@@ -1,9 +1,11 @@
-import { LoadingState } from '@redactie/utils';
+import { AlertContainer, alertService, LoadingState } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 
 import { TransitionsTable } from '../../components';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
 import { usePaginatedWorkflowStatuses } from '../../hooks';
+import { WorkflowStatus } from '../../services/workflowStatuses';
+import { WORKFLOW_ALERT_CONTAINER_IDS } from '../../store/workflows/workflows.const';
 import { WorkflowDetailRouteProps } from '../../workflows.types';
 
 const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
@@ -21,6 +23,7 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 	});
 	const [rolesLoadingState, roles] = rolesRightsConnector.api.hooks.useSiteRoles();
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
+	const [listData, setListData] = useState<WorkflowStatus[]>([]);
 
 	useEffect(() => {
 		if (
@@ -30,11 +33,36 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 		) {
 			setInitialLoading(LoadingState.Loaded);
 		}
+
+		if (
+			mySecurityRightsLoadingState === LoadingState.Error ||
+			rolesLoadingState === LoadingState.Error
+		) {
+			alertService.danger(
+				{
+					title: 'Er ging iets mis',
+					message: 'Er ging iets mis bij het ophalen van transities',
+				},
+				{
+					containerId: WORKFLOW_ALERT_CONTAINER_IDS.transitionOverview,
+				}
+			);
+			setListData([]);
+			setInitialLoading(LoadingState.Loaded);
+		}
 	}, [loading, mySecurityRightsLoadingState, rolesLoadingState]);
 
 	useEffect(() => {
 		rolesRightsConnector.api.store.roles.service.getDefaultSiteRoles();
 	}, []);
+
+	useEffect(() => {
+		if (!pagination) {
+			return;
+		}
+
+		setListData(pagination.data);
+	}, [pagination]);
 
 	/**
 	 * Render
@@ -43,7 +71,7 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 	const renderStatusesTable = (): ReactElement => {
 		return (
 			<TransitionsTable
-				statuses={pagination?.data || []}
+				statuses={listData}
 				readonly={false}
 				roles={roles || []}
 				workflow={workflow}
@@ -56,6 +84,10 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 
 	return (
 		<>
+			<AlertContainer
+				toastClassName="u-margin-bottom"
+				containerId={WORKFLOW_ALERT_CONTAINER_IDS.transitionOverview}
+			/>
 			<p>
 				Voeg transities toe door te bepalen naar welke status een content item aangepast kan
 				worden en door welke rol(len) dit mag gebeuren. Denk eraan om voor elke status een
