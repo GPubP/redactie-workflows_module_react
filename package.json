@@ -1,6 +1,6 @@
 {
   "name": "@redactie/workflows-module",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "redactie workflows module",
   "main": "dist/redactie-workflows-module.umd.js",
   "module": "dist/redactie-workflows-module.umd.js",
