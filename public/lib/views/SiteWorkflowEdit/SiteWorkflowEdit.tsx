@@ -69,7 +69,7 @@ const SiteWorkflowEdit: FC<WorkflowRouteProps> = ({ location, route, match }) =>
 	 */
 
 	const updateWorkflow = async (body: UpdateWorkflowPayload): Promise<void> => {
-		await workflowsFacade.updateSiteWorkflow(siteId, body);
+		await workflowsFacade.updateSiteWorkflow(siteId, body, body.data.name);
 	};
 
 	/**

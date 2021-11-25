@@ -319,10 +319,12 @@ export class WorkflowsFacade {
 	}
 
 	public async updateWorkflow(
-		payload: UpdateWorkflowPayload
+		payload: UpdateWorkflowPayload,
+		alertInput: string,
+		isTransitionUpdate = false
 	): Promise<WorkflowDetailResponse | void> {
 		this.detailStore.setIsUpdatingEntity(true, payload.uuid);
-		const alertMessages = getAlertMessages(payload.data.name);
+		const alertMessages = getAlertMessages(alertInput);
 
 		return this.service
 			.updateWorkflow(payload)
@@ -339,14 +341,22 @@ export class WorkflowsFacade {
 					showAlert(
 						WORKFLOW_ALERT_CONTAINER_IDS.update,
 						'success',
-						alertMessages.update.success
+						isTransitionUpdate
+							? alertMessages.updateTransitions.success
+							: alertMessages.update.success
 					);
 				}, 300);
 
 				return workflow;
 			})
 			.catch(error => {
-				showAlert(WORKFLOW_ALERT_CONTAINER_IDS.update, 'error', alertMessages.update.error);
+				showAlert(
+					WORKFLOW_ALERT_CONTAINER_IDS.update,
+					'error',
+					isTransitionUpdate
+						? alertMessages.updateTransitions.error
+						: alertMessages.update.error
+				);
 				this.detailStore.ui.update(payload.uuid, {
 					isUpdating: false,
 					error,
@@ -356,10 +366,12 @@ export class WorkflowsFacade {
 
 	public async updateSiteWorkflow(
 		siteId: string,
-		payload: UpdateWorkflowPayload
+		payload: UpdateWorkflowPayload,
+		alertInput: string,
+		isTransitionUpdate = false
 	): Promise<WorkflowDetailResponse | void> {
 		this.detailStore.setIsUpdatingEntity(true, payload.uuid);
-		const alertMessages = getAlertMessages(payload.data.name);
+		const alertMessages = getAlertMessages(alertInput);
 
 		return this.service
 			.updateSiteWorkflow(payload, siteId)
@@ -376,7 +388,9 @@ export class WorkflowsFacade {
 						showAlert(
 							WORKFLOW_ALERT_CONTAINER_IDS.update,
 							'success',
-							alertMessages.update.success
+							isTransitionUpdate
+								? alertMessages.updateTransitions.success
+								: alertMessages.update.success
 						),
 					300
 				);
@@ -384,7 +398,13 @@ export class WorkflowsFacade {
 				return workflow;
 			})
 			.catch(error => {
-				showAlert(WORKFLOW_ALERT_CONTAINER_IDS.update, 'error', alertMessages.update.error);
+				showAlert(
+					WORKFLOW_ALERT_CONTAINER_IDS.update,
+					'error',
+					isTransitionUpdate
+						? alertMessages.updateTransitions.error
+						: alertMessages.update.error
+				);
 				this.detailStore.ui.update(payload.uuid, {
 					isUpdating: false,
 					error,
