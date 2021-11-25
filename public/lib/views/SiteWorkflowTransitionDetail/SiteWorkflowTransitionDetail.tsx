@@ -153,7 +153,7 @@ export const SiteWorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({
 						),
 					},
 				},
-				workflow?.data.name as string,
+				transitionName as string,
 				true
 			)
 			.then(response => {

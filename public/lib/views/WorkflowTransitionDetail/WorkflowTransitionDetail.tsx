@@ -148,7 +148,7 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 						),
 					},
 				},
-				workflow?.data.name as string,
+				transitionName as string,
 				true
 			)
 			.then(response => {
