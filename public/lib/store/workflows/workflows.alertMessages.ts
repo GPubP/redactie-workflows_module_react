@@ -3,7 +3,14 @@ import { AlertMessages } from '../../workflows.types';
 export const getAlertMessages = (
 	name?: string
 ): AlertMessages<
-	'create' | 'fetch' | 'fetchOne' | 'delete' | 'update' | 'activate' | 'deactivate'
+	| 'create'
+	| 'fetch'
+	| 'fetchOne'
+	| 'delete'
+	| 'update'
+	| 'activate'
+	| 'deactivate'
+	| 'updateTransitions'
 > => ({
 	create: {
 		success: {
@@ -45,6 +52,16 @@ export const getAlertMessages = (
 		error: {
 			title: 'Bewaren mislukt',
 			message: `Bewaren van de workflow ${name} is mislukt`,
+		},
+	},
+	updateTransitions: {
+		success: {
+			title: 'Bewaard',
+			message: `U hebt de rechten op de transities voor ${name} succesvol gewijzigd`,
+		},
+		error: {
+			title: 'Bewaren mislukt',
+			message: `Bewaren van de rechten op de transities voor ${name} is mislukt`,
 		},
 	},
 	activate: {

@@ -136,17 +136,21 @@ export const WorkflowTransitionDetail: FC<WorkflowTransitionRouteProps> = ({ mat
 	 */
 	const onSubmit = async (values: TransitionSelectFormState): Promise<void> => {
 		await workflowsFacade
-			.updateWorkflow({
-				...(workflow as WorkflowDetailResponse),
-				data: {
-					...(workflow?.data as WorkflowData),
-					transitions: getTransitionsState(
-						workflowStatusUuid,
-						values,
-						workflow?.data.transitions || []
-					),
+			.updateWorkflow(
+				{
+					...(workflow as WorkflowDetailResponse),
+					data: {
+						...(workflow?.data as WorkflowData),
+						transitions: getTransitionsState(
+							workflowStatusUuid,
+							values,
+							workflow?.data.transitions || []
+						),
+					},
 				},
-			})
+				transitionName as string,
+				true
+			)
 			.then(response => {
 				if (response && response.uuid) {
 					resetChangeDetection();
