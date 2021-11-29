@@ -205,6 +205,11 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 						WORKFLOW_TECHNICAL_STATES.NEW
 			);
 
+			if (!transitionWithNewStatus) {
+				setNewWorkflowStatuses(statusMap.sort());
+				return;
+			}
+
 			const newSystemName =
 				(transitionWithNewStatus?.from as WorkflowPopulatedTransitionTarget).data
 					.technicalState === WORKFLOW_TECHNICAL_STATES.NEW
