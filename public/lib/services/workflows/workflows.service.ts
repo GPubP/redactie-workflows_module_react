@@ -1,5 +1,5 @@
-import { ContentTypesResponse } from '@redactie/content-types-module';
-import { parseSearchParams, SearchParams } from '@redactie/utils';
+import { ContentTypeDetailModel } from '@redactie/content-types-module';
+import { EmbeddedResponse, parseSearchParams, SearchParams } from '@redactie/utils';
 
 import { api } from '../api';
 
@@ -99,7 +99,7 @@ export class WorkflowsApiService {
 	public siteWorkflowOccurrences(
 		siteId: string,
 		workflowUuid: string
-	): Promise<ContentTypesResponse> {
+	): Promise<EmbeddedResponse<ContentTypeDetailModel[]>> {
 		return api
 			.get(
 				`${SITE_WORKFLOWS_PREFIX_URL}/${siteId}/workflows/${workflowUuid}/content-type-occurrences`

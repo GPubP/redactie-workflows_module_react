@@ -574,16 +574,15 @@ export class WorkflowsFacade {
 			});
 	}
 
-	// TODO: EXPORT DATA TYPE FROM CONTENT TYPES MODULE
 	public async siteWorkflowOccurrences(
 		siteId: string,
 		workflowUuid: string
 	): Promise<{ data: any; error: any }> {
 		return this.service
 			.siteWorkflowOccurrences(siteId, workflowUuid)
-			.then(occurrences => {
+			.then(data => {
 				return {
-					data: occurrences.data,
+					data: data._embedded,
 					error: null,
 				};
 			})
