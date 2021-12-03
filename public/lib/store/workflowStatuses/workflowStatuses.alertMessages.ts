@@ -6,23 +6,23 @@ export const getAlertMessages = (
 	create: {
 		success: {
 			title: 'Aangemaakt',
-			message: `U hebt de status ${name} succesvol aangemaakt`,
+			message: `Je hebt de status ${name} succesvol aangemaakt.`,
 		},
 		error: {
 			title: 'Aanmaken mislukt',
-			message: `Aanmaken van de status ${name} is mislukt`,
+			message: `Aanmaken van de status ${name} is mislukt.`,
 		},
 	},
 	fetch: {
 		error: {
 			title: 'Ophalen',
-			message: 'Ophalen van statussen is mislukt',
+			message: 'Ophalen van statussen is mislukt.',
 		},
 	},
 	fetchOne: {
 		error: {
 			title: 'Ophalen',
-			message: 'Ophalen van status is mislukt',
+			message: 'Ophalen van status is mislukt.',
 		},
 	},
 	fetchOccurrences: {
@@ -35,21 +35,21 @@ export const getAlertMessages = (
 	delete: {
 		success: {
 			title: 'Verwijderen',
-			message: `U hebt status ${name} succesvol verwijderd`,
+			message: `Je hebt status ${name} succesvol verwijderd.`,
 		},
 		error: {
 			title: 'Verwijderen',
-			message: `Verwijderen van status ${name} is mislukt`,
+			message: `Verwijderen van status ${name} is mislukt.`,
 		},
 	},
 	update: {
 		success: {
 			title: 'Bewaard',
-			message: `U hebt de status ${name} succesvol gewijzigd`,
+			message: `Je hebt de status ${name} succesvol gewijzigd.`,
 		},
 		error: {
 			title: 'Bewaren mislukt',
-			message: `Bewaren van de status ${name} is mislukt`,
+			message: `Bewaren van de status ${name} is mislukt.`,
 		},
 	},
 });
