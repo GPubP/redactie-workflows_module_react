@@ -91,8 +91,7 @@ const WorkflowTransitions: FC<WorkflowDetailRouteProps> = ({ workflow }) => {
 			<p>
 				Voeg transities toe door te bepalen naar welke status een content item aangepast kan
 				worden en door welke rol(len) dit mag gebeuren. Denk eraan om voor elke status een
-				transitie te voorzien. De transities worden automatisch gegroepeerd op de eerste
-				status en geordend volgens de volgorde van de statussen.
+				transitie te voorzien.
 			</p>
 			{renderStatusesTable()}
 		</>

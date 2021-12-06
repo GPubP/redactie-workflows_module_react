@@ -56,8 +56,8 @@ const WorkflowSettingsForm: FC<WorkflowSettingFormProps> = ({
 									disabled={disabled}
 								/>
 								<small className="u-block u-text-light u-margin-top-xs">
-									Geef de workflow een duidelijke beschrijving voor in het
-									overzicht.
+									Geef de workflow een duidelijke beschrijving. Deze wordt
+									gebruikt in het overzicht
 								</small>
 							</div>
 						</div>

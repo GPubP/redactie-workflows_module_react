@@ -367,7 +367,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 												onClick={onConfirm}
 												type={'success'}
 											>
-												Ja, oke
+												Ja, wijzig
 											</Button>
 										</div>
 									</ControlledModalFooter>

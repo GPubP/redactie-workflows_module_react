@@ -74,7 +74,7 @@ const WorkflowStatusForm: FC<WorkflowStatusFormProps> = ({
 				<p> {text} en kan daarom niet verwijderd worden.</p>
 			) : (
 				<p>
-					Opgelet, indien u deze status verwijderd kan hij niet meer aan een workflow
+					Opgelet: indien je deze status verwijderd kan hij niet meer aan een workflow
 					worden toegevoegd.
 				</p>
 			);
@@ -144,7 +144,7 @@ const WorkflowStatusForm: FC<WorkflowStatusFormProps> = ({
 						<div className="row middle-xs">
 							<div className="col-xs-12 col-md-8">
 								<Field
-									description="Geef de rol een korte en duidelijke naam."
+									description="Geef de status een korte en duidelijke naam."
 									as={TextField}
 									required
 									id="name"
@@ -174,8 +174,8 @@ const WorkflowStatusForm: FC<WorkflowStatusFormProps> = ({
 									name="description"
 								/>
 								<small>
-									Geef de status een duidelijke beschrijving voor in het
-									overzicht.
+									Geef de status een duidelijke beschrijving. Deze wordt gebruikt
+									in het overzicht.
 								</small>
 								<ErrorMessage name="description" />
 							</div>
