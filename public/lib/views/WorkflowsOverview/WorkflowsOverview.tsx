@@ -18,7 +18,7 @@ import {
 	useAPIQueryParams,
 	useNavigate,
 } from '@redactie/utils';
-import React, { FC, ReactElement, useEffect, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { FilterForm, FilterFormState } from '../../components';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
@@ -42,6 +42,11 @@ const WorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () 
 		mySecurityrights,
 	] = rolesRightsConnector.api.hooks.useMySecurityRightsForTenant(true);
 	const { loading, pagination } = usePaginatedWorkflows(query as SearchParams, { sparse: true });
+	const canUpdate = useMemo(() => {
+		return rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+			rolesRightsConnector.securityRights.updateWorkflow,
+		]);
+	}, [mySecurityrights]);
 
 	useEffect(() => {
 		if (mySecurityRightsLoadingState !== LoadingState.Loading) {
@@ -107,6 +112,7 @@ const WorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> = () 
 	const renderOverview = (): ReactElement | null => {
 		const workflowRows: WorkflowsOverviewTableRow[] = (pagination?.data || []).map(
 			workflow => ({
+				canUpdate,
 				workflowUuid: workflow.uuid as string,
 				detailPath: generatePath(MODULE_PATHS.workflowEdit, {
 					workflowUuid: workflow.uuid,

@@ -5,5 +5,6 @@ export interface WorkflowsOverviewTableRow {
 	description: string;
 	active: boolean;
 	isDefault: boolean;
+	canUpdate: boolean;
 	navigate: (statusUuid: string) => void;
 }

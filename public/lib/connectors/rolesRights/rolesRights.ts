@@ -1,6 +1,5 @@
 import Core from '@redactie/redactie-core';
-import { MySecurityRightModel, RolesRightsModuleAPI } from '@redactie/roles-rights-module';
-import { take } from 'rxjs/operators';
+import { RolesRightsModuleAPI } from '@redactie/roles-rights-module';
 
 class RolesRightsConnector {
 	public apiName = 'roles-rights-module';

@@ -66,7 +66,12 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<WorkflowsOvervie
 			classList: ['u-text-right'],
 			disableSorting: true,
 			width: '10%',
-			component(value, { workflowUuid, navigate }) {
+			component(value, { workflowUuid, navigate, canUpdate }) {
+				if (!canUpdate) {
+					// Needed tot keep consistent spacing with buttons
+					return <div className="u-margin-top-lg" />;
+				}
+
 				return (
 					<Button
 						ariaLabel="Edit"

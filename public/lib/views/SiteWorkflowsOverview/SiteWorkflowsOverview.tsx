@@ -19,7 +19,7 @@ import {
 	useNavigate,
 	useSiteContext,
 } from '@redactie/utils';
-import React, { FC, ReactElement, useEffect, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { FilterForm, FilterFormState } from '../../components';
 import { CORE_TRANSLATIONS, rolesRightsConnector, useCoreTranslation } from '../../connectors';
@@ -47,10 +47,15 @@ const SiteWorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> =
 		siteUuid: siteId,
 		onlyKeys: true,
 	});
-
 	const { loading, pagination } = usePaginatedWorkflows(query as SearchParams, {
 		siteId,
 	});
+	const canUpdate = useMemo<boolean>(() => {
+		console.log(mySecurityrights);
+		return rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+			rolesRightsConnector.securityRights.updateWorkflow,
+		]);
+	}, [mySecurityrights]);
 
 	useEffect(() => {
 		if (mySecurityRightsLoadingState !== LoadingState.Loading) {
@@ -116,6 +121,7 @@ const SiteWorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> =
 	const renderOverview = (): ReactElement | null => {
 		const workflowRows: WorkflowsOverviewTableRow[] = (pagination?.data || []).map(
 			workflow => ({
+				canUpdate,
 				isTenant: isTenantWorfklow(workflow),
 				workflowUuid: workflow.uuid as string,
 				detailPath: isTenantWorfklow(workflow)
