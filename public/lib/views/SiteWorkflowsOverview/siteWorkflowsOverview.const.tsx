@@ -80,8 +80,6 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<WorkflowsOvervie
 			disableSorting: true,
 			width: '10%',
 			component(value, { workflowUuid, navigate, isTenant, canUpdate }) {
-				console.log('canUpdate', canUpdate);
-
 				if (isTenant || !canUpdate) {
 					// Needed tot keep consistent spacing with buttons
 					return <div className="u-margin-top-lg" />;

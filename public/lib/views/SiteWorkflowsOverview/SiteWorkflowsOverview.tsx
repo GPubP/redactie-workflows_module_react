@@ -51,7 +51,6 @@ const SiteWorkflowsOverview: FC<WorkflowModuleRouteProps<WorkflowsMatchProps>> =
 		siteId,
 	});
 	const canUpdate = useMemo<boolean>(() => {
-		console.log(mySecurityrights);
 		return rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
 			rolesRightsConnector.securityRights.updateWorkflow,
 		]);
