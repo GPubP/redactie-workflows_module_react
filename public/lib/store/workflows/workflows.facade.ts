@@ -1,4 +1,5 @@
 import { PaginationResponse, PaginatorPlugin } from '@datorama/akita';
+import { ContentTypeDetailModel } from '@redactie/content-types-module';
 import { SiteDetailModel } from '@redactie/sites-module';
 import { SearchParams } from '@redactie/utils';
 import { from, Observable } from 'rxjs';
@@ -577,12 +578,12 @@ export class WorkflowsFacade {
 	public async siteWorkflowOccurrences(
 		siteId: string,
 		workflowUuid: string
-	): Promise<{ data: any; error: any }> {
+	): Promise<{ data: ContentTypeDetailModel[]; error: any }> {
 		return this.service
 			.siteWorkflowOccurrences(siteId, workflowUuid)
 			.then(data => {
 				return {
-					data: data._embedded,
+					data: data._embedded?.contentTypes,
 					error: null,
 				};
 			})

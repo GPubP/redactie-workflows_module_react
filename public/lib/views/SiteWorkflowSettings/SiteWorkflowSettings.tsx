@@ -7,6 +7,7 @@ import {
 	CardTitle,
 } from '@acpaas-ui/react-components';
 import { ActionBar, ActionBarContentSection, Status } from '@acpaas-ui/react-editorial-components';
+import { ContentTypeDetailModel } from '@redactie/content-types-module';
 import {
 	alertService,
 	DataLoader,
@@ -60,7 +61,7 @@ const SiteWorkflowSettings: FC<WorkflowDetailRouteProps> = ({
 		formValue
 	);
 	const [resetChangeDetectionOnNextRender] = useOnNextRender(() => resetChangeDetection());
-	const [occurrences, setOccurrences] = useState([]);
+	const [occurrences, setOccurrences] = useState<ContentTypeDetailModel[]>([]);
 	const [occurrencesLoading, setOccurrencesLoading] = useState(true);
 	const { generatePath } = useNavigate(SITES_ROOT);
 
