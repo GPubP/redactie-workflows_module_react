@@ -1,5 +1,5 @@
 import { ContentTypeDetailModel } from '@redactie/content-types-module';
-import { EmbeddedResponse, parseSearchParams, SearchParams } from '@redactie/utils';
+import { parseSearchParams, SearchParams } from '@redactie/utils';
 
 import { api } from '../api';
 
