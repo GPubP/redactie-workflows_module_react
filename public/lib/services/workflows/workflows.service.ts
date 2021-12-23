@@ -99,7 +99,7 @@ export class WorkflowsApiService {
 	public siteWorkflowOccurrences(
 		siteId: string,
 		workflowUuid: string
-	): Promise<EmbeddedResponse<ContentTypeDetailModel[]>> {
+	): Promise<{ _embedded: { contentTypes: ContentTypeDetailModel[] } }> {
 		return api
 			.get(
 				`${SITE_WORKFLOWS_PREFIX_URL}/${siteId}/workflows/${workflowUuid}/content-type-occurrences`
