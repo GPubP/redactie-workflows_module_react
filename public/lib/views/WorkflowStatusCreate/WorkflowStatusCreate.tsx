@@ -14,7 +14,7 @@ import { FormikProps } from 'formik';
 import React, { FC, useState } from 'react';
 
 import WorkflowStatusForm from '../../components/Forms/WorkflowStatusForm/WorkflowStatusForm';
-import { WorkflowStatusFormState } from '../../components/Forms/WorkflowStatusForm/workflowStatusForm.types';
+import { WorkflowStatusFormState } from '../../components/Forms/WorkflowStatusForm/WorkflowStatusForm.types';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useRoutesBreadcrumbs } from '../../hooks';
 import { workflowStatusesFacade } from '../../store/workflowStatuses';
