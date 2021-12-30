@@ -25,8 +25,8 @@ import { DefaultFormActions } from '../..';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../../connectors';
 import { MODULE_PATHS } from '../../../workflows.const';
 
-import { WORKFLOW_STATUS_FORM_VALIDATION_SCHEMA } from './workflowStatusForm.const';
-import { WorkflowStatusFormProps, WorkflowStatusFormState } from './workflowStatusForm.types';
+import { WORKFLOW_STATUS_FORM_VALIDATION_SCHEMA } from './WorkflowStatusForm.const';
+import { WorkflowStatusFormProps, WorkflowStatusFormState } from './WorkflowStatusForm.types';
 
 const WorkflowStatusForm: FC<WorkflowStatusFormProps> = ({
 	initialState,

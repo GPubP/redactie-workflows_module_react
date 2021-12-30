@@ -18,7 +18,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import WorkflowStatusForm from '../../components/Forms/WorkflowStatusForm/WorkflowStatusForm';
-import { WorkflowStatusFormState } from '../../components/Forms/WorkflowStatusForm/workflowStatusForm.types';
+import { WorkflowStatusFormState } from '../../components/Forms/WorkflowStatusForm/WorkflowStatusForm.types';
 import { rolesRightsConnector } from '../../connectors';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useRoutesBreadcrumbs } from '../../hooks';
