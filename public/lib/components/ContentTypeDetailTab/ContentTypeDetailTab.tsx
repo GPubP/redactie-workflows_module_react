@@ -182,8 +182,8 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 						name: status.label,
 					},
 					to: {
-						systemName: to ? to.value : null,
-						name: to ? to.label : null,
+						systemName: to ? to.value : undefined,
+						name: to ? to.label : undefined,
 					},
 					invalidFrom: !to,
 				};

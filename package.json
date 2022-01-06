@@ -32,7 +32,7 @@
     "@redactie:registry": "https://nexusrepo.antwerpen.be/repository/npm-private"
   },
   "devDependencies": {
-    "@acpaas-ui/react-components": "6.0.6",
+    "@acpaas-ui/react-components": "5.0.9",
     "@acpaas-ui/react-editorial-components": "0.0.14",
     "@babel/core": "7.15.5",
     "@babel/plugin-proposal-class-static-block": "^7.15.4",
