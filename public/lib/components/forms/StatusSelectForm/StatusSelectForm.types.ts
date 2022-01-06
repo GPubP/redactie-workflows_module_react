@@ -6,8 +6,8 @@ export interface StatusSelectFormItem {
 		name: string;
 	};
 	to: {
-		systemName: string | null;
-		name: string | null;
+		systemName: string | undefined;
+		name: string | undefined;
 	};
 	invalidFrom: boolean;
 }
