@@ -49,7 +49,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	onCancel,
 }) => {
 	const initialValues: ContentTypeDetailTabFormState = {
-		workflow: value?.config?.defaultWorkflow || value?.config?.workflow || null,
+		workflow: value?.config?.defaultWorkflow || value?.config?.workflow || undefined,
 	};
 	const [t] = useCoreTranslation();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
