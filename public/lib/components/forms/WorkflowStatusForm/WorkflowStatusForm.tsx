@@ -105,7 +105,7 @@ const WorkflowStatusForm: FC<WorkflowStatusFormProps> = ({
 								))}
 							</ul>
 						)}
-						{(occurrences?.length || 0) === 0 && (
+						{!occurrences?.length && (
 							<Button
 								onClick={() => setShowDeleteModal(true)}
 								className="u-margin-top"
