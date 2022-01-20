@@ -4,8 +4,7 @@ import React, { FC, useMemo } from 'react';
 
 import { registerWorkflowsAPI } from './lib/api';
 import { ContentTypeDetailTab } from './lib/components';
-import { rolesRightsConnector, sitesConnector } from './lib/connectors';
-import contentTypeConnector from './lib/connectors/contentTypes/contentTypes';
+import { contentTypeConnector, rolesRightsConnector, sitesConnector } from './lib/connectors';
 import {
 	SiteWorkflowCreate,
 	SiteWorkflowEdit,
@@ -34,7 +33,11 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	show: context => {
 		return !!context.siteId;
 	},
-	disabled: context => !context.isActive,
+	disabled: context =>
+		!context.isActive ||
+		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
+			rolesRightsConnector.securityRights.readWorkflow,
+		]),
 });
 
 const WorkflowsComponent: FC<WorkflowModuleRouteProps> = ({ route, tenantId }) => {
