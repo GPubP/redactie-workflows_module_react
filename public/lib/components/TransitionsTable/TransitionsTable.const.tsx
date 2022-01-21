@@ -65,10 +65,10 @@ export const TRANSITION_COLUMNS = (
 					<div className="u-flex u-flex-column">
 						{to.map((val, index) => (
 							<p key={index} className={index !== 0 ? 'u-margin-top-xs' : ''}>
-							<EllipsisWithTooltip >
-								{val.roles.join(', ')}
-							</EllipsisWithTooltip>
-						</p>
+								<EllipsisWithTooltip >
+									{val.roles.join(', ')}
+								</EllipsisWithTooltip>
+							</p>
 						))}
 					</div>
 				);
