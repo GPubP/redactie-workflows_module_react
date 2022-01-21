@@ -1,4 +1,5 @@
 import { Button, Icon } from '@acpaas-ui/react-components';
+import { EllipsisWithTooltip } from '@acpaas-ui/react-editorial-components';
 import { TranslateFunc } from '@redactie/translations-module';
 import { TableColumn } from '@redactie/utils';
 import React from 'react';
@@ -64,8 +65,10 @@ export const TRANSITION_COLUMNS = (
 					<div className="u-flex u-flex-column">
 						{to.map((val, index) => (
 							<p key={index} className={index !== 0 ? 'u-margin-top-xs' : ''}>
-								{val.roles.join(', ')}
-							</p>
+							<EllipsisWithTooltip >
+							{val.roles.join(', ')}
+							</EllipsisWithTooltip>
+						</p>
 						))}
 					</div>
 				);
