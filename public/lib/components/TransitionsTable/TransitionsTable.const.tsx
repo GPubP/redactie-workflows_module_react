@@ -66,7 +66,7 @@ export const TRANSITION_COLUMNS = (
 						{to.map((val, index) => (
 							<p key={index} className={index !== 0 ? 'u-margin-top-xs' : ''}>
 							<EllipsisWithTooltip >
-							{val.roles.join(', ')}
+								{val.roles.join(', ')}
 							</EllipsisWithTooltip>
 						</p>
 						))}
