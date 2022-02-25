@@ -68,10 +68,13 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	const {
 		loading: statusesLoading,
 		pagination: statusesPagination,
-	} = usePaginatedWorkflowStatuses({
-		page: 1,
-		pagesize: -1,
-	});
+	} = usePaginatedWorkflowStatuses(
+		{
+			page: 1,
+			pagesize: -1,
+		},
+		{ siteId }
+	);
 	const [
 		mySecurityRightsLoadingState,
 		mySecurityrights,
