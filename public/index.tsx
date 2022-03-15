@@ -228,7 +228,7 @@ if (rolesRightsConnector.api) {
 			renderContext: 'site',
 			context: 'site',
 			label: 'Workflow',
-			order: 1,
+			order: 2,
 			canShown: [
 				rolesRightsConnector.api.canShowns.securityRightsSiteCanShown(SITE_PARAM, [
 					rolesRightsConnector.securityRights.readWorkflow,
