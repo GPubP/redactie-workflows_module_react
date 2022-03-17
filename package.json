@@ -1,6 +1,6 @@
 {
   "name": "@redactie/workflows-module",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "redactie workflows module",
   "main": "dist/redactie-workflows-module.umd.js",
   "module": "dist/redactie-workflows-module.umd.js",
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@acpaas-ui/react-components": "5.0.9",
-    "@acpaas-ui/react-editorial-components": "0.0.14",
+    "@acpaas-ui/react-editorial-components": "1.1.0",
     "@babel/core": "7.15.5",
     "@babel/plugin-proposal-class-static-block": "^7.15.4",
     "@babel/preset-env": "7.15.6",
@@ -48,7 +48,7 @@
     "@redactie/roles-rights-module": "1.0.4",
     "@redactie/sites-module": "1.0.3",
     "@redactie/translations-module": "1.0.1",
-    "@redactie/utils": "2.0.2",
+    "@redactie/utils": "2.3.1",
     "@testing-library/jest-dom": "5.0.2",
     "@testing-library/react": "9.4.0",
     "@types/classnames": "^2.3.1",
