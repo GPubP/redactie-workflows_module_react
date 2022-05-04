@@ -30,9 +30,7 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
-	show: context => {
-		return !!context.siteId;
-	},
+	show: context => context.site,
 	disabled: context =>
 		!context.isActive ||
 		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
