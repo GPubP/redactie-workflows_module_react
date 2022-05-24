@@ -13,32 +13,18 @@
 
 ### hooks
 
-• **hooks**: `Object`
-
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `usePaginatedWorkflowStatuses` | `UsePaginatedWorkflowStatuses` |
-| `useWorkflow` | `UseWorkflow` |
+• **hooks**: `WorkflowsModuleHooksAPI`
 
 #### Defined in
 
-lib/workflows.types.ts:58
+lib/workflows.types.ts:65
 
 ___
 
 ### store
 
-• **store**: `Object`
-
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `workflows` | { `facade`: `Pick`<`WorkflowsFacade`, ``"getWorkflow"``\>  } |
-| `workflows.facade` | `Pick`<`WorkflowsFacade`, ``"getWorkflow"``\> |
+• **store**: `WorkflowsModuleStoreAPI`
 
 #### Defined in
 
-lib/workflows.types.ts:53
+lib/workflows.types.ts:64

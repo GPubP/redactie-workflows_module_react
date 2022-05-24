@@ -49,14 +49,18 @@ export interface WorkflowDetailRouteProps<Params = WorkflowRouteParams>
 	onSubmit: (data: CreateWorkflowPayload | WorkflowDetailModel) => Promise<void>;
 }
 
+export interface WorkflowsModuleStoreAPI {
+	workflows: {
+		facade: Pick<WorkflowsFacade, 'getWorkflow'>;
+	};
+}
+
+export interface WorkflowsModuleHooksAPI {
+	useWorkflow: UseWorkflow;
+	usePaginatedWorkflowStatuses: UsePaginatedWorkflowStatuses;
+}
+
 export interface WorkflowsModuleAPI {
-	store: {
-		workflows: {
-			facade: Pick<WorkflowsFacade, 'getWorkflow'>;
-		};
-	};
-	hooks: {
-		useWorkflow: UseWorkflow;
-		usePaginatedWorkflowStatuses: UsePaginatedWorkflowStatuses;
-	};
+	store: WorkflowsModuleStoreAPI;
+	hooks: WorkflowsModuleHooksAPI;
 }

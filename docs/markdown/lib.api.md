@@ -18,4 +18,4 @@
 
 #### Defined in
 
-lib/api/index.ts:8
+lib/api/index.ts:5

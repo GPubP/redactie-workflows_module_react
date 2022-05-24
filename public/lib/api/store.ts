@@ -1,7 +1,7 @@
 import { workflowsFacade } from '../store/workflows';
-import { WorkflowsModuleAPI } from '../workflows.types';
+import { WorkflowsModuleStoreAPI } from '../workflows.types';
 
-export const store: WorkflowsModuleAPI['store'] = {
+export const store: WorkflowsModuleStoreAPI = {
 	workflows: {
 		facade: {
 			getWorkflow: workflowsFacade.getWorkflow.bind(workflowsFacade),

@@ -1,14 +1,7 @@
 import Core from '@redactie/redactie-core';
 
-import { WorkflowsModuleAPI } from '../workflows.types';
-
-import { hooks } from './hooks';
-import { store } from './store';
+import * as API from './api';
 
 export const registerWorkflowsAPI = (): void => {
-	const api: WorkflowsModuleAPI = {
-		store,
-		hooks,
-	};
-	Core.modules.exposeModuleApi('workflows-module', api);
+	Core.modules.exposeModuleApi('workflows-module', API);
 };

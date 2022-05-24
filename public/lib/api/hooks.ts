@@ -1,7 +1,7 @@
 import { usePaginatedWorkflowStatuses, useWorkflow } from '../hooks';
-import { WorkflowsModuleAPI } from '../workflows.types';
+import { WorkflowsModuleHooksAPI } from '../workflows.types';
 
-export const hooks: WorkflowsModuleAPI['hooks'] = {
+export const hooks: WorkflowsModuleHooksAPI = {
 	useWorkflow,
 	usePaginatedWorkflowStatuses,
 };
