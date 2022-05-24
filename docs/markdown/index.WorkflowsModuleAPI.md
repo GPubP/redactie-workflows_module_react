@@ -13,18 +13,18 @@
 
 ### hooks
 
-• **hooks**: `WorkflowsModuleHooksAPI`
+• **hooks**: [`WorkflowsModuleHooksAPI`](../wiki/index.WorkflowsModuleHooksAPI)
 
 #### Defined in
 
-lib/workflows.types.ts:65
+public/lib/workflows.types.ts:65
 
 ___
 
 ### store
 
-• **store**: `WorkflowsModuleStoreAPI`
+• **store**: [`WorkflowsModuleStoreAPI`](../wiki/index.WorkflowsModuleStoreAPI)
 
 #### Defined in
 
-lib/workflows.types.ts:64
+public/lib/workflows.types.ts:64
