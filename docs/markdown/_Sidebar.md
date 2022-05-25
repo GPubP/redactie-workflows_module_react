@@ -4,5 +4,9 @@
 
 ### Modules
 
+- [Module API](../wiki/Module%20API)
 - [index](../wiki/index)
-- [lib/api](../wiki/lib.api)
+
+### Namespaces
+
+- [<internal>](../wiki/index.%3Cinternal%3E)

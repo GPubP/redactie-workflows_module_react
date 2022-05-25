@@ -14,28 +14,28 @@
 
 ### from
 
-• **from**: `WorkflowPopulatedTransitionTarget`
+• **from**: [`WorkflowPopulatedTransitionTarget`](../wiki/index.%3Cinternal%3E.WorkflowPopulatedTransitionTarget)
 
 #### Defined in
 
-lib/services/workflows/workflows.service.types.ts:39
+public/lib/services/workflows/workflows.service.types.ts:39
 
 ___
 
 ### requirements
 
-• **requirements**: `WorkflowRequirement`[]
+• **requirements**: [`WorkflowRequirement`](../wiki/index.%3Cinternal%3E.WorkflowRequirement)[]
 
 #### Defined in
 
-lib/services/workflows/workflows.service.types.ts:41
+public/lib/services/workflows/workflows.service.types.ts:41
 
 ___
 
 ### to
 
-• **to**: `WorkflowPopulatedTransitionTarget`
+• **to**: [`WorkflowPopulatedTransitionTarget`](../wiki/index.%3Cinternal%3E.WorkflowPopulatedTransitionTarget)
 
 #### Defined in
 
-lib/services/workflows/workflows.service.types.ts:40
+public/lib/services/workflows/workflows.service.types.ts:40

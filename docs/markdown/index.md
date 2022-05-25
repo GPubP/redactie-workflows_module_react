@@ -2,10 +2,16 @@
 
 ## Table of contents
 
+### Namespaces
+
+- [&lt;internal\&gt;](../wiki/index.%3Cinternal%3E)
+
 ### Interfaces
 
 - [WorkflowPopulatedTransition](../wiki/index.WorkflowPopulatedTransition)
 - [WorkflowsModuleAPI](../wiki/index.WorkflowsModuleAPI)
+- [WorkflowsModuleHooksAPI](../wiki/index.WorkflowsModuleHooksAPI)
+- [WorkflowsModuleStoreAPI](../wiki/index.WorkflowsModuleStoreAPI)
 
 ### Type aliases
 
@@ -15,8 +21,8 @@
 
 ### WorkflowDetailModel
 
-Ƭ **WorkflowDetailModel**: `WorkflowDetailResponse`
+Ƭ **WorkflowDetailModel**: [`WorkflowDetailResponse`](../wiki/index.%3Cinternal%3E#workflowdetailresponse-1)
 
 #### Defined in
 
-lib/store/workflows/detail/workflows-detail.model.ts:5
+public/lib/store/workflows/detail/workflows-detail.model.ts:5
